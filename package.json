@@ -1,0 +1,29 @@
+{
+    "name": "distribute-nightly",
+    "description": "Steps to distribute the zip from master to GitHub and Gutenberg Times",
+    "version": "0.0.1",
+    "license": "MIT",
+    "bin": {
+        "distribute-nightly ": "index.js",
+        "dist": "index.js"
+    },
+    "author": {
+        "name": "Birgit Pauli-Haack",
+        "email": "birgit.pauli@gmail.com",
+        "url": "https://icodeforapurpose.com"
+    },
+    "scripts": {
+        "format": "prettier --write \"./**/*.{js,json}\""
+    },
+    "dependencies": {
+        "cli-alerts": "^1.2.2",
+        "cli-handle-unhandled": "^1.1.1",
+        "cli-meow-help": "^2.0.2",
+        "cli-welcome": "^2.2.2",
+        "meow": "^8.1.0",
+        "shelljs": "^0.8.4"
+    },
+    "devDependencies": {
+        "prettier": "^2.2.1"
+    }
+}
