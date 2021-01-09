@@ -1,7 +1,7 @@
 {
     "name": "distribute-nightly",
     "description": "Steps to distribute the zip from master to GitHub and Gutenberg Times",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "license": "MIT",
     "bin": {
         "distribute-nightly ": "index.js",
