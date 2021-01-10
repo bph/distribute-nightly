@@ -25,6 +25,11 @@ const flags = {
 const commands = {
     help: {
         desc: `Print help info`,
+    },
+    test: {
+        type: `boolean`,
+        default: false,
+        desc: 'run test.js file'
     }
 }
 

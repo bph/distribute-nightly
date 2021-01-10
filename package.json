@@ -3,9 +3,11 @@
     "description": "Steps to distribute the zip from master to GitHub and Gutenberg Times",
     "version": "0.0.2",
     "license": "MIT",
+    "repository": "https://github.com/bph/distribute-nightly",
     "bin": {
         "distribute-nightly ": "index.js",
-        "dist": "index.js"
+        "dist": "index.js",
+        "test": "index.js"
     },
     "author": {
         "name": "Birgit Pauli-Haack",

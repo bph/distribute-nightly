@@ -11,6 +11,7 @@ const init = require('./utils/init');
 const cli  = require('./utils/cli');
 const log  = require('./utils/log');
 const git  = require('./utils/git');
+const test = require('./utils/test');
 const input = cli.input;
 const flags = cli.flags;
 const { clear, debug } = flags;
@@ -18,8 +19,10 @@ const { clear, debug } = flags;
 (async () =>{
     init({ clear });
     input.includes(`help`) && cli.showHelp(0);
+    
+    input.includes(`test`) && await test();
 
-    await git();
+    input.includes(`now`) && await git();
 
     debug && log(flags);
 

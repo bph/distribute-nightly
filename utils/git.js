@@ -2,12 +2,14 @@
 const shell = require('shelljs');
 const { yellow: y, green: g } = require('chalk');
 
-const upstream = 'wordpress/gutenberg';
-const nightlyFork = 'bph/gutenberg';
-const releaseAsset = '../gutenberg/gutenberg.zip';
-const releaseNotes = '../gutenberg/nightlyrelease.md';
 
 module.exports = (async () => {
+
+    const upstream = 'wordpress/gutenberg';
+    const nightlyFork = 'bph/gutenberg';
+    const releaseAsset = '../gutenberg/gutenberg.zip';
+    const releaseNotes = '../gutenberg/nightlyrelease.md';
+
     //I match up the tags for comparison. First nightly, then WordPress (upstream)
     // `gh release list -L 1 -R ${upstream}`
     // https://cli.github.com/manual/gh_release_list
