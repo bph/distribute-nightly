@@ -10,7 +10,7 @@ module.exports = (async () => {
     example();
 
     async function example() {
-        const client = new ftp.client();
+        const client = new ftp.Client();
         client.ftp.verbose = true;
         
         try{
