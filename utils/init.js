@@ -1,6 +1,7 @@
 const welcome = require('cli-welcome');
 const pkg = require('./../package.json');
 const unhandled = require('cli-handle-unhandled');
+const env = require('dotenv').config();
 
 module.exports = ({ clear = true }) => {
     unhandled();

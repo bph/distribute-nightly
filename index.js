@@ -6,12 +6,12 @@
  * 
  * @author Birgit Pauli-Haack <birgit.pauli@gmail.com>
  */
-
 const init = require('./utils/init');
 const cli  = require('./utils/cli');
 const log  = require('./utils/log');
 const git  = require('./utils/git');
 const test = require('./utils/test');
+const ftp = require('./utils/ftp');
 const input = cli.input;
 const flags = cli.flags;
 const { clear, debug } = flags;
@@ -23,6 +23,8 @@ const { clear, debug } = flags;
     input.includes(`test`) && await test();
 
     input.includes(`now`) && await git();
+
+    input.includes(`ftp`) && await ftp();
 
     debug && log(flags);
 

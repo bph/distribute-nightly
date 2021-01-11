@@ -18,10 +18,12 @@
         "format": "prettier --write \"./**/*.{js,json}\""
     },
     "dependencies": {
+        "basic-ftp": "^4.6.3",
         "cli-alerts": "^1.2.2",
         "cli-handle-unhandled": "^1.1.1",
         "cli-meow-help": "^2.0.2",
         "cli-welcome": "^2.2.2",
+        "dotenv": "^8.2.0",
         "meow": "^8.1.0",
         "shelljs": "^0.8.4"
     },
