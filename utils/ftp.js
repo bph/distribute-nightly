@@ -7,27 +7,25 @@ const ftp = require("basic-ftp");
 
 module.exports = (async () => {
 
+    example();
+
     async function example() {
         const client = new ftp.client();
         client.ftp.verbose = true;
+        
         try{
             await client.access({
                 host: process.env.FTPhost,
                 user: process.env.FTPuser,
                 password: process.env.FTPpass,
                 secure: true   
-            })
+            });
             console.log(await client.list());
             await client.uploadFrom(`../gutenberg/gutenberg.zip`, `/files/2020/11/gutenberg.zip`);
         }
         catch(err) {
-            console.log(err)
+            console.log(err);
         }
-        client.close
+        client.close();
     }
-
-
-
-
-
 });
