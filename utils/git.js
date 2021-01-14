@@ -28,7 +28,7 @@ module.exports = (async () => {
 
     if (wptag > nightlytag) {
        console.log(`${g(`Create a new release`)}`);
-       const newrelease = shell.exec(`gh release create '${wp-tag}-nightly' '${releaseAsset}' --repo ${nightlyfork} --title 'Gutenberg Nightly' -F '${releaseNotes}'`);
+       const newrelease = shell.exec(`gh release create '${wptag}-nightly' '${releaseAsset}' --repo ${nightlyFork} --title 'Gutenberg Nightly' -F '${releaseNotes}'`);
        console.log(`${g(`New release created.`)}`)
        console.log(newrelease);
 
