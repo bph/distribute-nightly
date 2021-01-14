@@ -29,8 +29,19 @@ const commands = {
     test: {
         type: `boolean`,
         default: false,
-        desc: 'run test.js file'
+        desc: 'runs test.js file'
+    },
+    now: {
+        type: `boolean`,
+        default: false,
+        desc: `distributes the release asset`
+    },
+    ftp: {
+        type: `boolean`,
+        default: false,
+        desc: `uploads gutenberg.zip to Gutenberg Times`
     }
+
 }
 
 const helpText = meowHelp({
