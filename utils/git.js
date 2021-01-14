@@ -30,13 +30,15 @@ module.exports = (async () => {
        console.log(`${g(`Create a new release`)}`);
        const newrelease = shell.exec(`gh release create '${wptag}-nightly' '${releaseAsset}' --repo ${nightlyFork} --title 'Gutenberg Nightly' -F '${releaseNotes}'`);
        console.log(`${g(`New release created.`)}`)
-       console.log(newrelease);
+       console.log(newrelease.stdout);
+       console.log(newrelease.stderr);
 
     } else { 
         console.log(`${y(`Will update the current asset for ${nightlytag}`)}`);
         const updateAsset = shell.exec(`gh release upload ${nightlytag} ${releaseAsset} --repo ${nightlyFork} --clobber`);
         console.log(`${g(`${releaseAsset} uploaded`)}`);
-        console.log(updateAsset);
+        console.log(updateAsset.stdout);
+        console.log(updateAsset.stderr);
 
     }
   
