@@ -1,14 +1,33 @@
-
+/**
+ * Dealing with all GitHub stuff. 
+ * 1. from the /gutenberg directory, push all changes to GitHub bph/gutenberg fork
+ * 2. Compare the tags of the form to the tags of the wordpress/gutenberg. 
+ *    If it's they have the same tag, we only upload newly build gutenberg.zip 
+ *    to an existing release. If Gutenberg stable has higher tag than the 
+ *    nightly we will create a new release tag and upload the asset. 
+ * 
+ * Directory structure: 
+ * gb-nightly
+ *      /gutenberg - bph/gutenberg = Form
+ *      /distribute-nightly - bph/distribute-nightly = CLI
+ * each with their own repo. 
+ */
 const shell = require('shelljs');
 const { yellow: y, green: g } = require('chalk');
 
+const upstream = 'wordpress/gutenberg';
+const nightlyFork = 'bph/gutenberg';
+const releaseAsset = '../gutenberg/gutenberg.zip';
+const releaseNotes = '../gutenberg/nightlyrelease.md';
 
 module.exports = (async () => {
 
-    const upstream = 'wordpress/gutenberg';
-    const nightlyFork = 'bph/gutenberg';
-    const releaseAsset = '../gutenberg/gutenberg.zip';
-    const releaseNotes = '../gutenberg/nightlyrelease.md';
+    // First step is 
+    // push changes to the github repo
+    change.log(`Pushing all changes to github repo`);
+    const pushtogithub = shell.exec(`cd ../gutenberg && git push origin master && cd ../distribute-nightly`);
+    change.log(pushtogithub);
+    change.log(`GitHub repo updated`);
 
     //I match up the tags for comparison. First nightly, then WordPress (upstream)
     // `gh release list -L 1 -R ${upstream}`
