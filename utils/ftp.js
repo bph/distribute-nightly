@@ -1,5 +1,5 @@
 /**
- * sftp -o Port=2222 live.f5534b71-d1e9-4b6f-a86f-fa78778ad9cf@appserver.live.f5534b71-d1e9-4b6f-a86f-fa78778ad9cf.drush.in
+ * 
  * local directory: /Users/birgit/gb-nightly/gutenberg/
  * remote directory: /files/2020/11/
  * 
