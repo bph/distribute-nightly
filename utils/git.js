@@ -24,10 +24,10 @@ module.exports = (async () => {
 
     // First step is 
     // push changes to the github repo
-    change.log(`Pushing all changes to github repo`);
+    console.log(`Pushing all changes to github repo`);
     const pushtogithub = shell.exec(`cd ../gutenberg && git push origin master && cd ../distribute-nightly`);
-    change.log(pushtogithub);
-    change.log(`GitHub repo updated`);
+    console.log(pushtogithub);
+    console.log(`GitHub repo updated`);
 
     //I match up the tags for comparison. First nightly, then WordPress (upstream)
     // `gh release list -L 1 -R ${upstream}`
