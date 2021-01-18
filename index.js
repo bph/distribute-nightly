@@ -11,7 +11,7 @@ const cli  = require('./utils/cli');
 const log  = require('./utils/log');
 const git  = require('./utils/git');
 const test = require('./utils/test');
-const ftp = require('./utils/ftp');
+const sftp = require('./utils/sftp');
 const input = cli.input;
 const flags = cli.flags;
 const { clear, debug } = flags;
@@ -24,7 +24,7 @@ const { clear, debug } = flags;
 
     input.includes(`now`) && await git();
 
-    input.includes(`ftp`) && await ftp();
+    input.includes(`sftp`) && await sftp();
 
     debug && log(flags);
 

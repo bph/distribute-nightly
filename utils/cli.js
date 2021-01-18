@@ -36,7 +36,7 @@ const commands = {
         default: false,
         desc: `distributes the release asset`
     },
-    ftp: {
+    sftp: {
         type: `boolean`,
         default: false,
         desc: `uploads gutenberg.zip to Gutenberg Times`

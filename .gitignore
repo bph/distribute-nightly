@@ -2,3 +2,4 @@ node_modules
 package-lock.json
 prettierrc.json
 .env
+utils/ftp-basic-ftp.js
