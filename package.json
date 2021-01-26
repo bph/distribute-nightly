@@ -18,7 +18,6 @@
         "format": "prettier --write \"./**/*.{js,json}\""
     },
     "dependencies": {
-        "basic-ftp": "^4.6.3",
         "cli-alerts": "^1.2.2",
         "cli-handle-unhandled": "^1.1.1",
         "cli-meow-help": "^2.0.2",
