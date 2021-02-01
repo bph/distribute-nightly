@@ -22,7 +22,10 @@ const { clear, debug } = flags;
     
     input.includes(`test`) && await test();
 
-    input.includes(`now`) && await git();
+    if (input.includes(`now`)) {
+        await git();
+        await sftp();
+    }
 
     input.includes(`sftp`) && await sftp();
 
