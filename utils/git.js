@@ -45,7 +45,7 @@ module.exports = (async () => {
     
     console.log(`WordPress Tag: ${wptag}`)
 
-    if (parseInt(wptag) > parstInt(nightlytag)) {
+    if (parseInt(wptag) > parseInt(nightlytag)) {
        console.log(`${g(`Create a new release`)}`);
        const newrelease = shell.exec(`gh release create '${wptag}-nightly' '${releaseAsset}' --repo ${nightlyFork} --title 'Gutenberg Nightly' -F '${releaseNotes}'`);
        console.log(`${g(`New release created.`)}`)
