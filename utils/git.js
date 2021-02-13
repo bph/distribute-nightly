@@ -35,7 +35,7 @@ module.exports = (async () => {
     
     const ngtytag = shell.exec(`gh release list -L 1 -R ${nightlyFork}`);
     const nightlytag = ngtytag.split('\t')[2];
-    const gbnightlytag = nightlytag.substring(0,5);
+    const gbnightlytag = nightlytag.substring(0,6);
     
     console.log(`Nightly Tag: ${gbnightlytag}`);
 
@@ -45,14 +45,16 @@ module.exports = (async () => {
     
     console.log(`WordPress Tag: ${wptag}`)
 
-    if (wptag > nightlytag) {
+    if (parseInt(wptag) > parstInt(nightlytag)) {
        console.log(`${g(`Create a new release`)}`);
        const newrelease = shell.exec(`gh release create '${wptag}-nightly' '${releaseAsset}' --repo ${nightlyFork} --title 'Gutenberg Nightly' -F '${releaseNotes}'`);
        console.log(`${g(`New release created.`)}`)
        console.log(newrelease.stdout);
        console.log(newrelease.stderr);
 
-    } else { 
+    } 
+    
+    else { 
         console.log(`${y(`Will update the current asset for ${nightlytag}`)}`);
         const updateAsset = shell.exec(`gh release upload ${nightlytag} ${releaseAsset} --repo ${nightlyFork} --clobber`);
         console.log(`${g(`${releaseAsset} uploaded`)}`);
