@@ -35,13 +35,13 @@ module.exports = (async () => {
     
     const ngtytag = shell.exec(`gh release list -L 1 -R ${nightlyFork}`);
     const nightlytag = ngtytag.split('\t')[2];
-    const gbnightlytag = nightlytag.substring(0,2);
+    const gbnightlytag = nightlytag.substring(0,4);
     
     console.log(`Nightly Tag: ${gbnightlytag}`);
 
     const upstreamtag = shell.exec(`gh release list -L 1 -R ${upstream}`);
     const lasttag = upstreamtag.split('\t')[2];
-    const wptag = lasttag.substring(1,2);
+    const wptag = lasttag.substring(1,4);
     
     console.log(`WordPress Tag: ${wptag}`)
 
