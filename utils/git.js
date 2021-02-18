@@ -25,7 +25,7 @@ module.exports = (async () => {
     // First step is 
     // push changes to the github repo
     console.log(`Pushing all changes to github repo`);
-    const pushtogithub = shell.exec(`cd ../gutenberg && git push origin master && cd ../distribute-nightly`);
+    const pushtogithub = shell.exec(`cd ../gutenberg && git push origin trunk && cd ../distribute-nightly`);
     console.log(pushtogithub);
     console.log(`GitHub repo updated`);
 
