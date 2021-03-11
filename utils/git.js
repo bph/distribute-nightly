@@ -14,6 +14,7 @@
  */
 const shell = require('shelljs');
 const { yellow: y, green: g } = require('chalk');
+const lineReader = require('line-reader');
 
 const upstream = 'wordpress/gutenberg';
 const nightlyFork = 'bph/gutenberg';
@@ -45,7 +46,7 @@ module.exports = (async () => {
     
     console.log(`WordPress Tag: ${wptag}`)
 
-    if (parseInt(wptag) > parseInt(nightlytag)) {
+    /*if (parseInt(wptag) > parseInt(nightlytag)) {
        console.log(`${g(`Create a new release`)}`);
        const newrelease = shell.exec(`gh release create '${wptag}-nightly' '${releaseAsset}' --repo ${nightlyFork} --title 'Gutenberg Nightly' -F '${releaseNotes}'`);
        console.log(`${g(`New release created.`)}`)
@@ -62,5 +63,35 @@ module.exports = (async () => {
         console.log(updateAsset.stderr);
 
     }
+    */
+
+    lineReader.eachLine('../gutenberg/gutenberg.php', function(line){
+            if (line.includes('Version')) {
+                 let versionraw = line;
+                 console.log(versionraw);
+                 let pos = versionraw.indexOf("Version: ") + 9;
+                 let endstring = versionraw.length;
+                 const version = versionraw.slice(pos, endstring);
+                 console.log(`gb version from file ${version.slice(0,5)}`)
+                 console.log(`latest nightly version ${nightlytag.slice(0,5)}`);
+
+            if (version.slice(0,5) > nightlytag.slice(0,5))
+                     {
+                        console.log(`true - new version `);
+                        console.log(`${g(`Create a new release`)}`);
+                        const newrelease = shell.exec(`gh release create '${version.slice(0,5)}-nightly' '${releaseAsset}' --repo ${nightlyFork} --title 'Gutenberg Nightly' -F '${releaseNotes}'`);
+                        console.log(`${g(`New release created.`)}`)
+                        console.log(newrelease.stdout);
+                        console.log(newrelease.stderr);
+                    } else {
+                        console.log(`${y(`Updating the current asset for ${nightlytag}`)}`);
+                        const updateAsset = shell.exec(`gh release upload ${nightlytag} ${releaseAsset} --repo ${nightlyFork} --clobber`);
+                        console.log(`${g(`${releaseAsset} uploaded`)}`);
+                        console.log(updateAsset.stdout);
+                        console.log(updateAsset.stderr);
+                    }
+                return false;
+          }
+        });
   
 });

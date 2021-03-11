@@ -23,6 +23,7 @@
         "cli-meow-help": "^2.0.2",
         "cli-welcome": "^2.2.2",
         "dotenv": "^8.2.0",
+        "line-reader": "^0.4.0",
         "meow": "^8.1.0",
         "shelljs": "^0.8.4",
         "ssh2-sftp-client": "^6.0.1"
