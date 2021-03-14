@@ -1,15 +1,13 @@
 const shell = require('shelljs');
 const { yellow: y, green: g, blue: b } = require('chalk');
 const lineReader = require('line-reader');
-const open = require('open');
-
 
 const upstream = 'wordpress/gutenberg';
 const nightlyFork = 'bph/gutenberg';
 
 module.exports = (async () => {
         console.log(`I am test`);
-        console.log(process.env.FTPUSER);
+        console.log(process.env.FTPuser);
 
         console.log(`${b(`Testing version comparison`)}`); 
 
@@ -55,11 +53,6 @@ module.exports = (async () => {
                 return false;
           }
         });
-        console.log(`testing opening URL ins browser... `);
-        console.log();
 
-        await open('https://icodeforapurpose.com/wp-admin/options-general.php?page=github-updater');
-
-        await open('https://gutenbergtimes.com/wp-admin/post.php?post=15137&action=edit');
 
     });
