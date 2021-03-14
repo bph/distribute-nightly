@@ -1,6 +1,7 @@
 const shell = require('shelljs');
 const { yellow: y, green: g, blue: b } = require('chalk');
 const lineReader = require('line-reader');
+const open = require('open');
 
 
 const upstream = 'wordpress/gutenberg';
@@ -49,9 +50,16 @@ module.exports = (async () => {
                         console.log(`true - new version `);
                     } else {
                         console.log(` false update asset`);
+        
                     }
                 return false;
           }
         });
+        console.log(`testing opening URL ins browser... `);
+        console.log();
+
+        await open('https://icodeforapurpose.com/wp-admin/options-general.php?page=github-updater');
+
+        await open('https://gutenbergtimes.com/wp-admin/post.php?post=15137&action=edit');
 
     });

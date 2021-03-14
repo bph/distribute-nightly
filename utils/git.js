@@ -15,6 +15,7 @@
 const shell = require('shelljs');
 const { yellow: y, green: g } = require('chalk');
 const lineReader = require('line-reader');
+const open = require('open');
 
 const upstream = 'wordpress/gutenberg';
 const nightlyFork = 'bph/gutenberg';
@@ -37,6 +38,8 @@ module.exports = (async () => {
     const ngtytag = shell.exec(`gh release list -L 1 -R ${nightlyFork}`);
     const nightlytag = ngtytag.split('\t')[2];
     const gbnightlytag = nightlytag.substring(0,4);
+    const refSite = 'https://icodeforapurpose.com/wp-admin/options-general.php?page=github-updater';
+    const nightlySite = 'https://gutenbergtimes.com/wp-admin/post.php?post=15137&action=edit';
     
     console.log(`Nightly Tag: ${gbnightlytag}`);
 
@@ -46,24 +49,6 @@ module.exports = (async () => {
     
     console.log(`WordPress Tag: ${wptag}`)
 
-    /*if (parseInt(wptag) > parseInt(nightlytag)) {
-       console.log(`${g(`Create a new release`)}`);
-       const newrelease = shell.exec(`gh release create '${wptag}-nightly' '${releaseAsset}' --repo ${nightlyFork} --title 'Gutenberg Nightly' -F '${releaseNotes}'`);
-       console.log(`${g(`New release created.`)}`)
-       console.log(newrelease.stdout);
-       console.log(newrelease.stderr);
-
-    } 
-    
-    else { 
-        console.log(`${y(`Will update the current asset for ${nightlytag}`)}`);
-        const updateAsset = shell.exec(`gh release upload ${nightlytag} ${releaseAsset} --repo ${nightlyFork} --clobber`);
-        console.log(`${g(`${releaseAsset} uploaded`)}`);
-        console.log(updateAsset.stdout);
-        console.log(updateAsset.stderr);
-
-    }
-    */
 
     lineReader.eachLine('../gutenberg/gutenberg.php', function(line){
             if (line.includes('Version')) {
@@ -93,5 +78,10 @@ module.exports = (async () => {
                 return false;
           }
         });
+        // and we open two websites 1) to update the page on GT and test a reference site. 
+
+        await open(refSite);
+
+        await open(nightlySite);
   
 });
