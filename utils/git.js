@@ -20,7 +20,7 @@ const open = require('open');
 const upstream = 'wordpress/gutenberg';
 const nightlyFork = 'bph/gutenberg';
 const releaseAsset = '../gutenberg/gutenberg.zip';
-const releaseNotes = '../gutenberg/nightlyrelease.md';
+const releaseNotes = '../distribute-nightly/nightlyrelease.md';
 
 module.exports = (async () => {
 
