@@ -38,7 +38,7 @@ module.exports = (async () => {
     const ngtytag = shell.exec(`gh release list -L 1 -R ${nightlyFork}`);
     const nightlytag = ngtytag.split('\t')[2];
     const gbnightlytag = nightlytag.substring(0,4);
-    const refSite = 'https://icodeforapurpose.com/wp-admin/options-general.php?page=github-updater';
+    const refSite = 'https://icodeforapurpose.com/wp-admin/options-general.php?page=git-updater';
     const nightlySite = 'https://gutenbergtimes.com/wp-admin/post.php?post=15137&action=edit';
     
     console.log(`Nightly Tag: ${gbnightlytag}`);
