@@ -12,6 +12,8 @@ module.exports = (async () => {
         console.log(`${b(`Testing version comparison`)}`); 
 
         const ngtytag = shell.exec(`gh release list -L 1 -R ${nightlyFork}`);
+        // TODO needs code if the status is NON-200 ie: 401 Unauthorized body: "{\"message\":\"Bad credentials\"
+        // I updated my GitHub Token and needed to login via access token again: gh auth login -h github.com
         const nightlytag = ngtytag.split('\t')[2];
         const gbnightlytag = nightlytag.substring(0,4);
         
