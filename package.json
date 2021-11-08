@@ -27,7 +27,7 @@
         "meow": "^8.1.0",
         "open": "^8.0.2",
         "shelljs": "^0.8.4",
-        "ssh2-sftp-client": "^6.0.1"
+        "ssh2-sftp-client": "^7.1.0"
     },
     "devDependencies": {
         "prettier": "^2.2.1"
