@@ -1,12 +1,12 @@
 /**
  * 
- * local directory: /Users/birgit/gb-nightly/gutenberg/
+ * local directory: /Users/pauli/gb-nightly/gutenberg/
  * remote directory: /files/2020/11/
  * 
  */
 
 let Client = require('ssh2-sftp-client');
-const localdir = '/Users/birgit/gb-nightly/gutenberg/';
+const localdir = '/Users/pauli/gb-nightly/gutenberg/';
 const remotedir = '/files/2020/11/';
 const releaseAsset = 'gutenberg.zip';
 
