@@ -6,7 +6,7 @@
  */
 
 let Client = require('ssh2-sftp-client');
-const localdir = '/Users/pauli/gb-nightly/gutenberg/';
+const localdir = process.env.localDir;
 const remotedir = '/files/2020/11/';
 const releaseAsset = 'gutenberg.zip';
 
