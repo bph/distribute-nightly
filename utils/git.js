@@ -37,23 +37,23 @@ module.exports = (async () => {
     
     const ngtytag = shell.exec(`gh release list -L 1 -R ${nightlyFork}`);
     const nightlytag = ngtytag.split('\t')[2];
-    const gbnightlytag = nightlytag.substring(0,4);
+   // const gbnightlytag = nightlytag.substring(0,4);
     const refSite = 'https://icodeforapurpose.com/wp-admin/options-general.php?page=git-updater';
     const nightlySite = 'https://gutenbergtimes.com/wp-admin/post.php?post=15137&action=edit';
     
-    console.log(`Nightly Tag: ${gbnightlytag}`);
+    //console.log(`Nightly Tag: ${gbnightlytag}`);
 
-    const upstreamtag = shell.exec(`gh release list -L 1 -R ${upstream}`);
-    const lasttag = upstreamtag.split('\t')[2];
-    const wptag = lasttag.substring(1,4);
+    //const upstreamtag = shell.exec(`gh release list -L 1 -R ${upstream}`);
+   // const lasttag = upstreamtag.split('\t')[2];
+   //const wptag = lasttag.substring(1,4);
     
-    console.log(`WordPress Tag: ${wptag}`)
+    //console.log(`WordPress Tag: ${wptag}`)
 
 
     lineReader.eachLine('../gutenberg/gutenberg.php', function(line){
             if (line.includes('Version')) {
                  let versionraw = line;
-                 console.log(versionraw);
+                // console.log(versionraw);
                  let pos = versionraw.indexOf("Version: ") + 9;
                  let endstring = versionraw.length;
                  const version = versionraw.slice(pos, endstring);
@@ -62,18 +62,18 @@ module.exports = (async () => {
 
             if (version.slice(0,5) > nightlytag.slice(0,5))
                      {
-                        console.log(`true - new version `);
+                        console.log(`${g(` New version` )}`);
                         console.log(`${g(`Create a new release`)}`);
                         const newrelease = shell.exec(`gh release create '${version.slice(0,5)}-nightly' '${releaseAsset}' --repo ${nightlyFork} --title 'Gutenberg Nightly' -F '${releaseNotes}'`);
                         console.log(`${g(`New release created.`)}`)
                         console.log(newrelease.stdout);
-                        console.log(newrelease.stderr);
+                        //console.log(newrelease.stderr);
                     } else {
                         console.log(`${y(`Updating the current asset for ${nightlytag}`)}`);
                         const updateAsset = shell.exec(`gh release upload ${nightlytag} ${releaseAsset} --repo ${nightlyFork} --clobber`);
                         console.log(`${g(`${releaseAsset} uploaded`)}`);
                         console.log(updateAsset.stdout);
-                        console.log(updateAsset.stderr);
+                        //console.log(updateAsset.stderr);
                     }
                 return false;
           }

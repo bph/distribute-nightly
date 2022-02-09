@@ -9,47 +9,47 @@ module.exports = (async () => {
         console.log(`I am test`);
         console.log(process.env.FTPuser);
 
-        console.log(`${b(`Testing version comparison`)}`); 
+        console.log(`${y(`Testing version comparison`)}`); 
 
         const ngtytag = shell.exec(`gh release list -L 1 -R ${nightlyFork}`);
         // TODO needs code if the status is NON-200 ie: 401 Unauthorized body: "{\"message\":\"Bad credentials\"
         // I updated my GitHub Token and needed to login via access token again: gh auth login -h github.com
         const nightlytag = ngtytag.split('\t')[2];
-        const gbnightlytag = nightlytag.substring(0,4);
+       // const gbnightlytag = nightlytag.substring(0,4);
         
-        console.log(`Nightly Tag: ${gbnightlytag}`);
+        //console.log(`Nightly Tag: ${gbnightlytag}`);
     
-        const upstreamtag = shell.exec(`gh release list -L 1 -R ${upstream}`);
-        const lasttag = upstreamtag.split('\t')[2];
-        const wptag = lasttag.substring(1,5);
+       // const upstreamtag = shell.exec(`gh release list -L 1 -R ${upstream}`);
+       // const lasttag = upstreamtag.split('\t')[2];
+      //  const wptag = lasttag.substring(1,5);
         
-        console.log(`WordPress Tag: ${wptag}`);
+        //console.log(`WordPress Tag: ${wptag}`);
     
-        if (parseInt(wptag) > parseInt(nightlytag)){
+       /* if (parseInt(wptag) > parseInt(nightlytag)){
             console.log(`${g(`Create a new release`)}`);
         }
         else { 
                 console.log(`${y(`Will update the current asset for ${nightlytag}`)}`);
         }    
-
-        console.log(`finding  the right version from gutenberg.php`);
+        */
+      //  console.log(`${b(`Finding  the right version from gutenberg.php`)}`);
      
         //we read the file until we come to the line with the version. 
        lineReader.eachLine('../gutenberg/gutenberg.php', function(line){
             if (line.includes('Version')) {
                  let versionraw = line;
-                 console.log(versionraw);
+                 //console.log(versionraw);
                  let pos = versionraw.indexOf("Version: ") + 9;
                  let endstring = versionraw.length;
                  const version = versionraw.slice(pos, endstring);
-                 console.log(`gb version from file ${version.slice(0,5)}`)
-                 console.log(`latest nightly version ${nightlytag.slice(0,5)}`);
+                 console.log(`Local GB v. ${version.slice(0,5)}`)
+                 console.log(`Latest GitHub v. ${nightlytag.slice(0,5)}`);
 
             if (version.slice(0,5) > nightlytag.slice(0,5))
                      {
-                        console.log(`true - new version `);
+                        console.log(`${g(` New version` )}`);
                     } else {
-                        console.log(` false update asset`);
+                        console.log(`${b(` Update asset` )}`);
         
                     }
                 return false;
