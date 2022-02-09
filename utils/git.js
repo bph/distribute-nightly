@@ -17,11 +17,13 @@ const { yellow: y, green: g } = require('chalk');
 const lineReader = require('line-reader');
 const open = require('open');
 
-const upstream = 'wordpress/gutenberg';
+//const upstream = 'wordpress/gutenberg';
 const nightlyFork = 'bph/gutenberg';
 const releaseAsset = '../gutenberg/gutenberg.zip';
 const releaseNotes = '../distribute-nightly/nightlyrelease.md';
-
+const refSite = 'https://icodeforapurpose.com/wp-admin/options-general.php?page=git-updater';
+const nightlySite = 'https://gutenbergtimes.com/wp-admin/post.php?post=15137&action=edit';
+    
 module.exports = (async () => {
 
     // First step is 
@@ -38,17 +40,7 @@ module.exports = (async () => {
     const ngtytag = shell.exec(`gh release list -L 1 -R ${nightlyFork}`);
     const nightlytag = ngtytag.split('\t')[2];
    // const gbnightlytag = nightlytag.substring(0,4);
-    const refSite = 'https://icodeforapurpose.com/wp-admin/options-general.php?page=git-updater';
-    const nightlySite = 'https://gutenbergtimes.com/wp-admin/post.php?post=15137&action=edit';
     
-    //console.log(`Nightly Tag: ${gbnightlytag}`);
-
-    //const upstreamtag = shell.exec(`gh release list -L 1 -R ${upstream}`);
-   // const lasttag = upstreamtag.split('\t')[2];
-   //const wptag = lasttag.substring(1,4);
-    
-    //console.log(`WordPress Tag: ${wptag}`)
-
 
     lineReader.eachLine('../gutenberg/gutenberg.php', function(line){
             if (line.includes('Version')) {

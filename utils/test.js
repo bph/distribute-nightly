@@ -15,25 +15,7 @@ module.exports = (async () => {
         // TODO needs code if the status is NON-200 ie: 401 Unauthorized body: "{\"message\":\"Bad credentials\"
         // I updated my GitHub Token and needed to login via access token again: gh auth login -h github.com
         const nightlytag = ngtytag.split('\t')[2];
-       // const gbnightlytag = nightlytag.substring(0,4);
-        
-        //console.log(`Nightly Tag: ${gbnightlytag}`);
-    
-       // const upstreamtag = shell.exec(`gh release list -L 1 -R ${upstream}`);
-       // const lasttag = upstreamtag.split('\t')[2];
-      //  const wptag = lasttag.substring(1,5);
-        
-        //console.log(`WordPress Tag: ${wptag}`);
-    
-       /* if (parseInt(wptag) > parseInt(nightlytag)){
-            console.log(`${g(`Create a new release`)}`);
-        }
-        else { 
-                console.log(`${y(`Will update the current asset for ${nightlytag}`)}`);
-        }    
-        */
-      //  console.log(`${b(`Finding  the right version from gutenberg.php`)}`);
-     
+       
         //we read the file until we come to the line with the version. 
        lineReader.eachLine('../gutenberg/gutenberg.php', function(line){
             if (line.includes('Version')) {
