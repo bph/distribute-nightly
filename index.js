@@ -12,6 +12,7 @@ const log  = require('./utils/log');
 const git  = require('./utils/git');
 const test = require('./utils/test');
 const sftp = require('./utils/sftp');
+const build = require('./utils/buildgb');
 const input = cli.input;
 const flags = cli.flags;
 const { clear, debug } = flags;
@@ -32,6 +33,8 @@ const { clear, debug } = flags;
     }
 
     input.includes(`sftp`) && await sftp();
+
+    input.includes(`buildgb`) && await build();
 
     debug && log(flags);
 
