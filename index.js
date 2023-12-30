@@ -2,7 +2,7 @@
 
 /**
  * distribute-nightly 
- * Steps to distribute the zip from master to GitHub and Gutenberg Times
+ * Steps to distribute the zip from trunk to GitHub and Gutenberg Times
  * 
  * @author Birgit Pauli-Haack <birgit.pauli@gmail.com>
  */
