@@ -1,0 +1,26 @@
+{
+    "$schema": "https://playground.wordpress.net/blueprint-schema.json",
+    "description":"Blueprint for Gutenberg Nightly, built almost daily via the Gutenberg Times.",
+    "landingPage": "/wp-admin/site-editor.php",
+        "steps":[
+                {
+                    "step": "login",
+                    "username": "admin",
+                    "password": "password"
+                },
+                {
+                    "step":"installPlugin",
+                        "pluginZipFile":{
+                            "resource":"url",
+                            "url":"https://gutenbergtimes.com/wp-content/uploads/2020/11/gutenberg.zip"
+                        },
+                        "options": {
+                            "activate": true
+                        }
+                },
+                {
+                    "step":"activatePlugin",
+                    "pluginPath":"/wordpress/wp-content/plugins/gutenberg"
+                }
+        ]
+}

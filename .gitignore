@@ -3,3 +3,5 @@ package-lock.json
 prettierrc.json
 .env
 utils/ftp-basic-ftp.js
+toggle-feature-experiments-page.json
+just-the-link.html
