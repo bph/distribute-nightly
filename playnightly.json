@@ -1,7 +1,14 @@
 {
     "$schema": "https://playground.wordpress.net/blueprint-schema.json",
-    "description":"Blueprint for Gutenberg Nightly, built almost daily via the Gutenberg Times.",
-    "landingPage": "/wp-admin/site-editor.php",
+    "meta":{
+        "title": "Blueprint: Gutenberg Nightly",
+        "description":"Blueprint to test Gutenberg Nightly in a Playground instance. GB Nightly is built almost daily via the Gutenberg Times.",
+        "author": "Birgit Pauli-Haack",
+        "categories": ["Gutenberg", "Plugins"]
+
+    },
+    
+    "landingPage": "/wp-admin/plugins.php",
         "steps":[
                 {
                     "step": "login",
