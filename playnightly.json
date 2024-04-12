@@ -24,10 +24,6 @@
                         "options": {
                             "activate": true
                         }
-                },
-                {
-                    "step":"activatePlugin",
-                    "pluginPath":"/wordpress/wp-content/plugins/gutenberg"
                 }
         ]
 }
