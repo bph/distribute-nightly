@@ -25,7 +25,9 @@
             },
             {
                 "step": "activatePlugin",
-                "pluginPath": "/wordpress/wp-content/plugins/books/"
+                "pluginPath": "books/books.php"
             }
-            ]
+    ]
 }
+
+            
