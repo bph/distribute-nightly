@@ -30,7 +30,7 @@ module.exports = (async () => {
     // push changes to the github repo
     console.log(`Pushing all changes to github repo`);
     const pushtogithub = shell.exec(`cd ../gutenberg && git push origin trunk && cd ../distribute-nightly`);
-    console.log(pushtogithub);
+    console.log(pushtogithub.stderr);
     console.log(`GitHub repo updated`);
 
     //I match up the tags for comparison. First nightly, then WordPress (upstream)
