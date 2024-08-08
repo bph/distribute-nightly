@@ -26,7 +26,17 @@
             {
                 "step": "activatePlugin",
                 "pluginPath": "books/books.php"
+            },
+            { "step": "installPlugin",
+            "pluginZipFile": {
+                "resource": "wordpress.org/plugins",
+                "slug": "classic-editor"
+            },
+            "options": {
+                "activate": true
             }
+        }
+
     ]
 }
 
