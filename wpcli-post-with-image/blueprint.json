@@ -1,0 +1,39 @@
+{
+	"$schema": "https://playground.wordpress.net/blueprint-schema.json",
+	"meta": {
+		"title": "Use wp-cli to add a post with image",
+		"description": "Use wp-cli to create a post from text file with block markup and a featured image",
+		"author": "bph",
+		"categories": ["Content", "wpcli"]
+	},
+	"landingPage": "/?p=4",
+	"login": true,
+	"steps": [
+		{
+			"step": "writeFiles",
+			"writeToPath": "/wordpress/wp-content",
+			"filesTree": {
+			  "resource": "literal:directory",
+			  "name": "wp-content",
+			  "files": {
+				"postcontent.md": {
+				  "resource": "url",
+				  "url": "https://raw.githubusercontent.com/wordpress/blueprints/trunk/blueprints/wpcli-post-with-image/postcontent.md"
+				},
+				"Select-storage-method.png": {
+				  "resource": "url",
+				  "url": "https://raw.githubusercontent.com/wordpress/blueprints/trunk/blueprints/wpcli-post-with-image/Select-storage-method.png"
+				}
+			  }
+			}
+		   },
+		{
+			"step": "wp-cli",
+			"command": "wp post create --post_title='Welcome to Playground' --post_status='published' /wordpress/wp-content/postcontent.md"
+		},
+		{
+			"step": "wp-cli",
+			"command": "wp media import wordpress/wp-content/Select-storage-method.png --post_id=4 --title='Select your storage method' --featured_image"
+		}
+	]
+}

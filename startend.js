@@ -24,7 +24,7 @@ function main() {
 
     // Navigate to gutenberg directory and fetch upstream
     const gutenbergDir = path.resolve(rootDir, '../gutenberg');
-    runCommand('git fetch upstream', gutenbergDir);
+    runCommand('git fetch upstream --no-tags', gutenbergDir);
 
     // Merge upstream/trunk with a dynamic date message
     const mergeMessage = `prep build ${formattedDate}`;

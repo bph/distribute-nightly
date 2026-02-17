@@ -38,6 +38,10 @@ module.exports = (async () => {
     // https://cli.github.com/manual/gh_release_list
     
     const ngtytag = shell.exec(`gh release list -L 1 -R ${nightlyFork}`);
+    if (ngtytag.code !== 0 || !ngtytag.stdout.trim()) {
+        console.error('Failed to get GitHub releases:', ngtytag.stderr);
+        return;
+    }
     const nightlytag = ngtytag.split('\t')[2];
    // const gbnightlytag = nightlytag.substring(0,4);
     
@@ -72,7 +76,7 @@ module.exports = (async () => {
         });
         // and we open two websites 1) to update the page on GT and test a reference site. 
 
-        await open(refSite);
+        // await open(refSite); - don't need it any more. 
 
         await open(nightlySite);
   

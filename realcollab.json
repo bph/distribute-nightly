@@ -1,0 +1,50 @@
+{
+    "landingPage": "/wp-admin",
+    "login": true,
+    "features": {
+      "networking": true
+    },
+    "steps": [
+      {
+        "step": "mkdir",
+        "path": "/tmp/pr"
+      },
+      {
+        "step": "writeFile",
+        "path": "/tmp/pr/pr.zip",
+        "data": {
+          "resource": "url",
+          "url": "/plugin-proxy.php?org=WordPress&repo=gutenberg&workflow=Build%20Gutenberg%20Plugin%20Zip&artifact=gutenberg-plugin&pr=68483",
+          "caption": "Downloading Gutenberg PR 68483"
+        }
+      },
+      {
+        "step": "unzip",
+        "zipPath": "/tmp/pr/pr.zip",
+        "extractToPath": "/tmp/pr"
+      },
+      {
+        "step": "installPlugin",
+        "pluginData": {
+          "resource": "vfs",
+          "path": "/tmp/pr/gutenberg.zip"
+        }
+      },
+      {
+        "step": "runPHP",
+        "code": "<?php require '/wordpress/wp-load.php'; update_option( 'gutenberg-experiments', array( 'gutenberg-sync-heartbeat-collaboration' => true, 'gutenberg-sync-webrtc-collaboration' => true, 'gutenberg-sync-collaboration' => true, 'gutenberg-block-comment' => true )  );"
+    },
+    {
+        "step": "updateUserMeta",
+        "meta": {
+            "admin_color": "modern"
+        },
+        "userId": 1
+    }
+ ],
+    "preferredVersions": {
+      "php": "8.0",
+      "wp": "latest"
+    }
+  }
+  

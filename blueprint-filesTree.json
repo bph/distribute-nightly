@@ -1,0 +1,20 @@
+{
+    "$schema": "https://playground.wordpress.net/blueprint-schema.json",
+    "steps": [
+    {
+        "step": "writeFiles",
+            "writeToPath": "/wordpress/wp-content/plugins/woo-shipping-method",
+            "filesTree": {
+            "name": "woo-shipping-method",
+            "files": {
+                "plugin.php": "<?php\n/*\nPlugin Name: My Plugin\n*/",
+                "readme.txt": "=== My Plugin ===\nDescription: A simple plugin",
+                "includes": {
+                    "class-main.php": "<?php\nclass Main_Class {}",
+                    "functions.php": "<?php\nfunction my_plugin_init() {}"
+                }
+      }
+    }
+  }
+]
+}
