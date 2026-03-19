@@ -22,7 +22,7 @@ const nightlyFork = 'bph/gutenberg';
 const releaseAsset = '../gutenberg/gutenberg.zip';
 const releaseNotes = '../distribute-nightly/nightlyrelease.md';
 const refSite = 'https://icodeforapurpose.com/wp-admin/options-general.php?page=git-updater';
-const nightlySite = 'https://gutenbergtimes.com/wp-admin/post.php?post=15137&action=edit';
+const nightlySite = 'https://gutenbergtimes.com/need-a-zip-from-master/';
     
 module.exports = (async () => {
 
