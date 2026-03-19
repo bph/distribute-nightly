@@ -40,6 +40,11 @@ const commands = {
         type: `boolean`,
         default: false,
         desc: `uploads gutenberg.zip to Gutenberg Times`
+    },
+    'update-page': {
+        type: `boolean`,
+        default: false,
+        desc: `updates the Gutenberg Nightly page via WP REST API`
     }
 
 }
