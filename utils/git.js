@@ -46,38 +46,37 @@ module.exports = (async () => {
    // const gbnightlytag = nightlytag.substring(0,4);
     
 
-    lineReader.eachLine('../gutenberg/gutenberg.php', function(line){
+    await new Promise((resolve, reject) => {
+        lineReader.eachLine('../gutenberg/gutenberg.php', function(line){
             if (line.includes('Version')) {
                  let versionraw = line;
-                // console.log(versionraw);
                  let pos = versionraw.indexOf("Version: ") + 9;
                  let endstring = versionraw.length;
                  const version = versionraw.slice(pos, endstring);
                  console.log(`gb version from file ${version.slice(0,5)}`)
                  console.log(`latest nightly version ${nightlytag.slice(0,5)}`);
 
-            if (version.slice(0,5) > nightlytag.slice(0,5))
+                if (version.slice(0,5) > nightlytag.slice(0,5))
                      {
                         console.log(`${g(` New version` )}`);
                         console.log(`${g(`Create a new release`)}`);
                         const newrelease = shell.exec(`gh release create '${version.slice(0,5)}-nightly' '${releaseAsset}' --repo ${nightlyFork} --title 'Gutenberg Nightly' -F '${releaseNotes}'`);
                         console.log(`${g(`New release created.`)}`)
                         console.log(newrelease.stdout);
-                        //console.log(newrelease.stderr);
                     } else {
                         console.log(`${y(`Updating the current asset for ${nightlytag}`)}`);
                         const updateAsset = shell.exec(`gh release upload ${nightlytag} ${releaseAsset} --repo ${nightlyFork} --clobber`);
                         console.log(`${g(`${releaseAsset} uploaded`)}`);
                         console.log(updateAsset.stdout);
-                        //console.log(updateAsset.stderr);
                     }
                 return false;
-          }
+            }
+        }, function(err) {
+            if (err) reject(err);
+            else resolve();
         });
-        // and we open two websites 1) to update the page on GT and test a reference site. 
+    });
 
-        // await open(refSite); - don't need it any more. 
-
-        await open(nightlySite);
+    await open(nightlySite);
   
 });

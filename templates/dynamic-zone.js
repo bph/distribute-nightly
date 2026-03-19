@@ -11,8 +11,9 @@ function buildDynamicZone(vars) {
 <!-- /wp:paragraph -->
 <!-- wp:list -->
 <ul>
-<li><strong>Latest Weekend Edition:</strong> <a href="${vars.weekendEditionUrl}">${vars.weekendEditionTitle}</a></li>
-<li><strong>Latest podcast episode:</strong> <a href="${vars.podcastUrl}">${vars.podcastTitle}</a></li>
+<li>🙌 <strong>Latest Weekend Edition:</strong> <a href="${vars.weekendEditionUrl}">${vars.weekendEditionTitle}</a></li>
+<li>🎙️ <strong>Latest podcast episode:</strong> <a href="${vars.podcastUrl}">${vars.podcastTitle}</a></li>${vars.rcRelease ? `
+<li>🧪 <a href="${vars.rcRelease.rcUrl}">Gutenberg ${vars.rcRelease.rcVersion} RC ${vars.rcRelease.rcNum}</a> is available for testing.</li>` : ''}
 </ul>
 <!-- /wp:list -->
 <!-- wp:columns -->

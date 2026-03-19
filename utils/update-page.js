@@ -64,6 +64,42 @@ async function fetchPodcast() {
     return { podcastTitle: 'Gutenberg Changelog', podcastUrl: 'https://gutenbergtimes.com/podcast/' };
 }
 
+async function fetchRcRelease(stableVersion) {
+    try {
+        // Next version after current stable (e.g., 22.7 → 22.8)
+        const parts = stableVersion.split('.');
+        let major = parseInt(parts[0]);
+        let minor = parseInt(parts[1]) + 1;
+        if (minor > 9) { major += 1; minor = 0; }
+        const nextVersion = `${major}.${minor}`;
+
+        const result = shell.exec(
+            `gh release list -R WordPress/gutenberg -L 10 --json tagName,name,isPrerelease --jq '[.[] | select(.isPrerelease)]'`,
+            { silent: true }
+        );
+        if (result.code !== 0) return null;
+
+        const prereleases = JSON.parse(result.stdout);
+        // Find the latest RC for the next version
+        const rc = prereleases.find(r => r.tagName.startsWith(`v${nextVersion}.0-rc`));
+        if (!rc) return null;
+
+        // Extract RC number from tag like "v22.8.0-rc.1"
+        const rcMatch = rc.tagName.match(/rc\.?(\d+)/);
+        const rcNum = rcMatch ? rcMatch[1] : '1';
+
+        console.log(`Found RC: ${rc.name} (${rc.tagName})`);
+        return {
+            rcVersion: nextVersion,
+            rcNum,
+            rcUrl: `https://github.com/WordPress/gutenberg/releases/tag/${rc.tagName}`,
+        };
+    } catch (err) {
+        console.log(`${y('Warning: Could not check for RC releases:')} ${err.message}`);
+        return null;
+    }
+}
+
 module.exports = (async () => {
     console.log('Updating Gutenberg Nightly page...');
 
@@ -110,10 +146,11 @@ module.exports = (async () => {
     const stableReleaseUrl = 'https://wordpress.org/plugins/gutenberg/';
 
     // Fetch optional values (with fallbacks)
-    const [whatsNewUrl, weekendEdition, podcast] = await Promise.all([
+    const [whatsNewUrl, weekendEdition, podcast, rcRelease] = await Promise.all([
         fetchWhatsNewUrl(stableVersion),
         fetchWeekendEdition(),
         fetchPodcast(),
+        fetchRcRelease(stableVersion),
     ]);
 
     const vars = {
@@ -126,6 +163,7 @@ module.exports = (async () => {
         whatsNewUrl,
         ...weekendEdition,
         ...podcast,
+        rcRelease,
     };
 
     console.log(`Build date: ${buildDate}`);
