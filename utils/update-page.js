@@ -6,6 +6,7 @@
 const shell = require('shelljs');
 const { yellow: y, green: g } = require('chalk');
 const lineReader = require('line-reader');
+const open = require('open');
 const { wpGet, wpPost } = require('./wordpress');
 const { buildDynamicZone } = require('../templates/dynamic-zone');
 
@@ -187,7 +188,8 @@ module.exports = (async () => {
 
     await wpPost(`/wp/v2/pages/${PAGE_ID}`, { content: newContent });
 
-    // Step 4 — Log success
+    // Step 4 — Log success and open page
     console.log(`${g('Page updated successfully!')}`);
     console.log(`${g('https://gutenbergtimes.com/need-a-zip-from-master/')}`);
+    await open('https://gutenbergtimes.com/need-a-zip-from-master/');
 });

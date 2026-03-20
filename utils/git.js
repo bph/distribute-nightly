@@ -15,14 +15,10 @@
 const shell = require('shelljs');
 const { yellow: y, green: g } = require('chalk');
 const lineReader = require('line-reader');
-const open = require('open');
-
 //const upstream = 'wordpress/gutenberg';
 const nightlyFork = 'bph/gutenberg';
 const releaseAsset = '../gutenberg/gutenberg.zip';
 const releaseNotes = '../distribute-nightly/nightlyrelease.md';
-const refSite = 'https://icodeforapurpose.com/wp-admin/options-general.php?page=git-updater';
-const nightlySite = 'https://gutenbergtimes.com/need-a-zip-from-master/';
     
 module.exports = (async () => {
 
@@ -77,6 +73,4 @@ module.exports = (async () => {
         });
     });
 
-    await open(nightlySite);
-  
 });
