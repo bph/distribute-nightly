@@ -93,10 +93,10 @@ function main() {
 
     // Navigate to distribute-nightly directory and run dist now
     const distributeNightlyDir = path.resolve(rootDir, '../distribute-nightly');
-    runCommand('dist now', distributeNightlyDir);
+    runCommand('dist now --no-clear', distributeNightlyDir);
 
     // Update the Gutenberg Nightly page via WP REST API
-    runCommand('dist update-page', distributeNightlyDir);
+    runCommand('dist update-page --no-clear', distributeNightlyDir);
 }
 
 // Execute the main function
