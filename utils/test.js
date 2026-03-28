@@ -24,10 +24,15 @@ module.exports = (async () => {
                  let pos = versionraw.indexOf("Version: ") + 9;
                  let endstring = versionraw.length;
                  const version = versionraw.slice(pos, endstring);
-                 console.log(`Local GB v. ${version.slice(0,5)}`)
-                 console.log(`Latest GitHub v. ${nightlytag.slice(0,5)}`);
+                 // Extract major.minor (e.g. "23.0" from "23.0.20260328")
+                 const versionParts = version.match(/(\d+\.\d+)/);
+                 const fileVersion = versionParts ? versionParts[1] : version;
+                 const tagVersion = nightlytag.match(/(\d+\.\d+)/);
+                 const nightlyVersion = tagVersion ? tagVersion[1] : nightlytag;
+                 console.log(`Local GB v. ${fileVersion}`)
+                 console.log(`Latest GitHub v. ${nightlyVersion}`);
 
-            if (version.slice(0,5) > nightlytag.slice(0,5))
+            if (fileVersion > nightlyVersion)
                      {
                         console.log(`${g(` New version` )}`);
                     } else {

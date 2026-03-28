@@ -32,7 +32,9 @@ async function fetchWhatsNewUrl(stableVersion) {
     try {
         const res = await fetch('https://make.wordpress.org/core/tag/gutenberg-new/feed/');
         const xml = await res.text();
-        const re = new RegExp(`<item>\\s*<title>([^<]*${stableVersion.replace('.', '\\.')}[^<]*)</title>\\s*<link>([^<]+)</link>`);
+        // Use major.minor for feed title matching (e.g. "22.8" from "22.8.1")
+        const majorMinor = stableVersion.split('.').slice(0, 2).join('.');
+        const re = new RegExp(`<item>\\s*<title>([^<]*${majorMinor.replace('.', '\\.')}[^<]*)</title>\\s*<link>([^<]+)</link>`);
         const match = xml.match(re);
         if (match) return match[2].trim();
     } catch (err) {
@@ -117,9 +119,7 @@ module.exports = (async () => {
     try {
         const wpOrgRes = await fetch('https://api.wordpress.org/plugins/info/1.2/?action=plugin_information&request[slug]=gutenberg');
         const wpOrgData = await wpOrgRes.json();
-        // Use major.minor only (e.g. "22.7" from "22.7.1")
-        const stableParts = wpOrgData.version.split('.');
-        stableVersion = `${stableParts[0]}.${stableParts[1]}`;
+        stableVersion = wpOrgData.version;
         console.log(`Stable Gutenberg version (from WP.org): ${stableVersion}`);
     } catch (err) {
         console.log(`${y('Warning: Could not fetch stable version from WP.org:')} ${err.message}`);
@@ -129,19 +129,21 @@ module.exports = (async () => {
         console.log(`${y('Using fallback stable version:')} ${stableVersion}`);
     }
 
-    // Nightly release tag uses the stable version
-    const nightlyGitHubUrl = `https://github.com/${nightlyFork}/releases/tag/${stableVersion}-nightly`;
+    // Nightly release tag uses major.minor from gutenberg.php (e.g. "23.0")
+    const nightlyParts = fullVersion.match(/(\d+\.\d+)/);
+    const nightlyTag = nightlyParts ? nightlyParts[1] : fullVersion;
+    const nightlyGitHubUrl = `https://github.com/${nightlyFork}/releases/tag/${nightlyTag}-nightly`;
 
     // Get the download URL from the GitHub release
     let nightlyDownloadUrl;
     const ghResult = shell.exec(
-        `gh release view ${stableVersion}-nightly --repo ${nightlyFork} --json assets --jq '.assets[0].url'`,
+        `gh release view ${nightlyTag}-nightly --repo ${nightlyFork} --json assets --jq '.assets[0].url'`,
         { silent: true }
     );
     if (ghResult.code === 0 && ghResult.stdout.trim()) {
         nightlyDownloadUrl = ghResult.stdout.trim();
     } else {
-        nightlyDownloadUrl = `https://github.com/${nightlyFork}/releases/download/${stableVersion}-nightly/gutenberg.zip`;
+        nightlyDownloadUrl = `https://github.com/${nightlyFork}/releases/download/${nightlyTag}-nightly/gutenberg.zip`;
     }
 
     const stableReleaseUrl = 'https://wordpress.org/plugins/gutenberg/';

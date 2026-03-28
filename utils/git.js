@@ -49,14 +49,19 @@ module.exports = (async () => {
                  let pos = versionraw.indexOf("Version: ") + 9;
                  let endstring = versionraw.length;
                  const version = versionraw.slice(pos, endstring);
-                 console.log(`gb version from file ${version.slice(0,5)}`)
-                 console.log(`latest nightly version ${nightlytag.slice(0,5)}`);
+                 // Extract major.minor (e.g. "23.0" from "23.0.20260328")
+                 const versionParts = version.match(/(\d+\.\d+)/);
+                 const fileVersion = versionParts ? versionParts[1] : version;
+                 const tagVersion = nightlytag.match(/(\d+\.\d+)/);
+                 const nightlyVersion = tagVersion ? tagVersion[1] : nightlytag;
+                 console.log(`gb version from file ${fileVersion}`)
+                 console.log(`latest nightly version ${nightlyVersion}`);
 
-                if (version.slice(0,5) > nightlytag.slice(0,5))
+                if (fileVersion > nightlyVersion)
                      {
                         console.log(`${g(` New version` )}`);
                         console.log(`${g(`Create a new release`)}`);
-                        const newrelease = shell.exec(`gh release create '${version.slice(0,5)}-nightly' '${releaseAsset}' --repo ${nightlyFork} --title 'Gutenberg Nightly' -F '${releaseNotes}'`);
+                        const newrelease = shell.exec(`gh release create '${fileVersion}-nightly' '${releaseAsset}' --repo ${nightlyFork} --title 'Gutenberg Nightly' -F '${releaseNotes}'`);
                         console.log(`${g(`New release created.`)}`)
                         console.log(newrelease.stdout);
                     } else {

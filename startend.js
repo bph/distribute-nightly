@@ -25,19 +25,20 @@ function runCommand(command, cwd = process.cwd()) {
     }
 }
 
-// Read the Version field from upstream/trunk:gutenberg.php and bump minor by 1
-function getNightlyVersion(gutenbergDir) {
-    const upstreamFile = execSync('git show upstream/trunk:gutenberg.php', { cwd: gutenbergDir }).toString();
-    const match = upstreamFile.match(/\* Version:\s*(\d+)\.(\d+)/);
+// Get the nightly version from the latest release tag on bph/gutenberg
+function getNightlyVersion() {
+    const result = execSync('gh release list -L 1 -R bph/gutenberg', { encoding: 'utf8' }).trim();
+    if (!result) {
+        throw new Error('Could not get latest release from bph/gutenberg');
+    }
+    // Tag is in the third tab-separated column, e.g. "23.0.-nightly"
+    const tag = result.split('\t')[2];
+    const match = tag.match(/(\d+)\.(\d+)/);
     if (!match) {
-        throw new Error('Could not read version from upstream/trunk:gutenberg.php');
+        throw new Error(`Could not parse version from release tag: ${tag}`);
     }
-    let major = parseInt(match[1]);
-    let minor = parseInt(match[2]) + 1;
-    if (minor > 9) {
-        major += 1;
-        minor = 0;
-    }
+    const major = parseInt(match[1]);
+    const minor = parseInt(match[2]);
     return `${major}.${minor}.${dateStamp}`;
 }
 
@@ -57,8 +58,8 @@ function main() {
     const gutenbergDir = path.resolve(rootDir, '../gutenberg');
     runCommand('git fetch upstream --no-tags', gutenbergDir);
 
-    // Step 1: Determine nightly version (upstream milestone + 1, plus today's date)
-    const nightlyVersion = getNightlyVersion(gutenbergDir);
+    // Step 1: Determine nightly version from latest release tag, plus today's date
+    const nightlyVersion = getNightlyVersion();
     console.log(`Nightly version: ${nightlyVersion}`);
 
     // Step 2: Update gutenberg.php with the nightly version and commit
