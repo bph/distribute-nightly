@@ -42,7 +42,7 @@ function buildDynamicZone(vars) {
 </div>
 <!-- /wp:buttons -->
 <!-- wp:list -->
-<ul><li><a href="${vars.whatsNewUrl}">What's new in Gutenberg ${vars.stableVersion}?</a></li></ul>
+<ul><li><a href="${vars.whatsNewUrl}">What's new in Gutenberg ${vars.stableMajorMinor}?</a></li></ul>
 <!-- /wp:list -->
 </div>
 <!-- /wp:column -->

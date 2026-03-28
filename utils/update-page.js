@@ -129,21 +129,24 @@ module.exports = (async () => {
         console.log(`${y('Using fallback stable version:')} ${stableVersion}`);
     }
 
-    // Nightly release tag uses major.minor from gutenberg.php (e.g. "23.0")
-    const nightlyParts = fullVersion.match(/(\d+\.\d+)/);
-    const nightlyTag = nightlyParts ? nightlyParts[1] : fullVersion;
-    const nightlyGitHubUrl = `https://github.com/${nightlyFork}/releases/tag/${nightlyTag}-nightly`;
+    // Get the actual nightly release tag from GitHub (e.g. "23.0.-nightly")
+    const tagResult = shell.exec(
+        `gh release list -L 1 -R ${nightlyFork} --json tagName --jq '.[0].tagName'`,
+        { silent: true }
+    );
+    const nightlyTag = tagResult.code === 0 ? tagResult.stdout.trim() : '';
+    const nightlyGitHubUrl = `https://github.com/${nightlyFork}/releases/tag/${nightlyTag}`;
 
     // Get the download URL from the GitHub release
     let nightlyDownloadUrl;
     const ghResult = shell.exec(
-        `gh release view ${nightlyTag}-nightly --repo ${nightlyFork} --json assets --jq '.assets[0].url'`,
+        `gh release view ${nightlyTag} --repo ${nightlyFork} --json assets --jq '.assets[0].url'`,
         { silent: true }
     );
     if (ghResult.code === 0 && ghResult.stdout.trim()) {
         nightlyDownloadUrl = ghResult.stdout.trim();
     } else {
-        nightlyDownloadUrl = `https://github.com/${nightlyFork}/releases/download/${nightlyTag}-nightly/gutenberg.zip`;
+        nightlyDownloadUrl = `https://github.com/${nightlyFork}/releases/download/${nightlyTag}/gutenberg.zip`;
     }
 
     const stableReleaseUrl = 'https://wordpress.org/plugins/gutenberg/';
@@ -156,12 +159,16 @@ module.exports = (async () => {
         fetchRcRelease(stableVersion),
     ]);
 
+    // major.minor only for "What's new" link (e.g. "22.8" from "22.8.1")
+    const stableMajorMinor = stableVersion.split('.').slice(0, 2).join('.');
+
     const vars = {
         buildDate,
         nightlyVersion,
         nightlyDownloadUrl,
         nightlyGitHubUrl,
         stableVersion,
+        stableMajorMinor,
         stableReleaseUrl,
         whatsNewUrl,
         ...weekendEdition,
