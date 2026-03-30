@@ -42,8 +42,8 @@ function buildDynamicZone(vars) {
 </div>
 <!-- /wp:buttons -->
 <!-- wp:list -->
-<ul><li><a href="${vars.whatsNewUrl}">What's new in Gutenberg ${vars.stableMajorMinor}?</a></li>${vars.patchRelease ? `
-<li><a href="${vars.patchRelease.url}">v${vars.patchRelease.version}</a></li>` : ''}</ul>
+<ul><li><a href="${vars.whatsNewUrl}">What's new in Gutenberg ${vars.stableMajorMinor}?</a></li>${vars.patchReleases.map(p => `
+<li><a href="${p.url}">v${p.version}</a></li>`).join('')}</ul>
 <!-- /wp:list -->
 </div>
 <!-- /wp:column -->

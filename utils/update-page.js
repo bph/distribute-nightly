@@ -162,10 +162,13 @@ module.exports = (async () => {
     // major.minor only for "What's new" link (e.g. "22.8" from "22.8.1")
     const stableParts = stableVersion.split('.');
     const stableMajorMinor = stableParts.slice(0, 2).join('.');
-    // Patch release info (e.g. "22.8.1" — only when third component > 0)
-    const patchRelease = stableParts.length > 2 && parseInt(stableParts[2]) > 0
-        ? { version: stableVersion, url: `https://github.com/WordPress/gutenberg/releases/tag/v${stableVersion}` }
-        : null;
+    // Patch releases (e.g. 22.8.1, 22.8.2 — all patches from .1 up to the current patch)
+    const patchNum = stableParts.length > 2 ? parseInt(stableParts[2]) : 0;
+    const patchReleases = [];
+    for (let i = 1; i <= patchNum; i++) {
+        const ver = `${stableMajorMinor}.${i}`;
+        patchReleases.push({ version: ver, url: `https://github.com/WordPress/gutenberg/releases/tag/v${ver}` });
+    }
 
     const vars = {
         buildDate,
@@ -176,7 +179,7 @@ module.exports = (async () => {
         stableMajorMinor,
         stableReleaseUrl,
         whatsNewUrl,
-        patchRelease,
+        patchReleases,
         ...weekendEdition,
         ...podcast,
         rcRelease,
