@@ -9,6 +9,7 @@ const lineReader = require('line-reader');
 const open = require('open');
 const { wpGet, wpPost } = require('./wordpress');
 const { buildDynamicZone } = require('../templates/dynamic-zone');
+const getBlockStatus = require('./block-status');
 
 const PAGE_ID = 15137;
 const nightlyFork = 'bph/gutenberg';
@@ -152,11 +153,12 @@ module.exports = (async () => {
     const stableReleaseUrl = 'https://wordpress.org/plugins/gutenberg/';
 
     // Fetch optional values (with fallbacks)
-    const [whatsNewUrl, weekendEdition, podcast, rcRelease] = await Promise.all([
+    const [whatsNewUrl, weekendEdition, podcast, rcRelease, blockStatus] = await Promise.all([
         fetchWhatsNewUrl(stableVersion),
         fetchWeekendEdition(),
         fetchPodcast(),
         fetchRcRelease(stableVersion),
+        getBlockStatus(),
     ]);
 
     // major.minor only for "What's new" link (e.g. "22.8" from "22.8.1")
@@ -183,6 +185,7 @@ module.exports = (async () => {
         ...weekendEdition,
         ...podcast,
         rcRelease,
+        blockStatus,
     };
 
     console.log(`Build date: ${buildDate}`);

@@ -2,9 +2,11 @@ node_modules
 package-lock.json
 prettierrc.json
 .env
+data/
 utils/ftp-basic-ftp.js
 toggle-feature-experiments-page.json
 just-the-link.html
 changelog-2026-03-19.md
 gb-nightly-page-restructure-automation.md
 update-page-plan.md
+gutenberg-nightly-v2.0.md
