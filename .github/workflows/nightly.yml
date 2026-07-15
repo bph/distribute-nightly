@@ -152,7 +152,7 @@ jobs:
           VERSION=$(grep -oP 'Version:\s*\K\S+' gutenberg/gutenberg.php)
           TAG=$(gh release list -L 1 -R bph/gutenberg --json tagName --jq '.[0].tagName')
           gh issue comment "$NIGHTLY_ISSUE" -R bph/gutenberg --body \
-            "✅ **Nightly $VERSION** built and distributed. [Download](https://github.com/bph/gutenberg/releases/tag/$TAG) · ⬇️ ${PREV_DOWNLOADS:-n/a} downloads since previous build · [Run log](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+            "✅ **Nightly $VERSION** built and distributed. [Download](https://github.com/bph/gutenberg/releases/tag/$TAG) · 💾 ${PREV_DOWNLOADS:-n/a} downloads since previous build · [Run log](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
 
       - name: Comment on build-log issue (failure)
         if: failure() && inputs.mode != 'preflight'
