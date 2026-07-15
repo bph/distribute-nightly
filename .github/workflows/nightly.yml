@@ -39,9 +39,10 @@ concurrency:
   group: nightly-distribution
   cancel-in-progress: false
 
-# actions: write is needed by the keep-alive step (github.token, not the PAT)
+# actions: write is needed by the keep-alive step; contents: write lets the
+# download-ledger step push badge/downloads.json (both use github.token, not the PAT)
 permissions:
-  contents: read
+  contents: write
   actions: write
 
 env:
@@ -126,6 +127,35 @@ jobs:
         if: inputs.mode != 'preflight'
         working-directory: distribute-nightly
         run: node startend.js
+
+      # ── 3c. Download ledger: keep a true running total ─────────────
+      # Adds yesterday's count (captured before --clobber reset it) to
+      # badge/downloads.json, which feeds the shields.io endpoint badge in
+      # the release notes. Only after a successful run — on failure the
+      # asset wasn't replaced, so the counter keeps accumulating and adding
+      # it now would double-count it tomorrow.
+      - name: Update download ledger
+        if: success() && inputs.mode != 'preflight'
+        working-directory: distribute-nightly
+        run: |
+          if [[ "$PREV_DOWNLOADS" =~ ^[0-9]+$ ]]; then
+            node -e "
+              const fs = require('fs');
+              const f = 'badge/downloads.json';
+              const b = JSON.parse(fs.readFileSync(f));
+              b.total += Number(process.env.PREV_DOWNLOADS);
+              b.message = b.total.toLocaleString('en-US');
+              b.updated = new Date().toISOString().slice(0, 10);
+              fs.writeFileSync(f, JSON.stringify(b, null, 4) + '\n');
+            "
+            git config user.name  "gutenberg-nightly-bot"
+            git config user.email "pauli@gutenbergtimes.com"
+            git add badge/downloads.json
+            git commit -m "ledger: +$PREV_DOWNLOADS downloads"
+            git push
+          else
+            echo "No usable download count ($PREV_DOWNLOADS) — ledger unchanged."
+          fi
 
       # ── 4. Job summary on the run page ────────────────────────────
       - name: Write job summary
