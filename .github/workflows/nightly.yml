@@ -1,0 +1,165 @@
+# Distribute Gutenberg Nightly
+#
+# The heavy lifting is done by startend.js — this workflow recreates the
+# environment it expects (side-by-side repos, upstream remote, Node, the
+# `dist` command) and adds notifications around it. Same code path as a
+# local run.
+#
+# Required secrets on bph/distribute-nightly:
+#   NIGHTLY_PAT       Fine-grained PAT for bph/gutenberg (Contents + Issues: R/W)
+#   FTPHOST, FTPPORT, FTPUSER, FTPPASS
+#   WP_API_URL, WP_USER, WP_APP_PASSWORD
+#
+# One-time prerequisites (in this order):
+#   1. Enable Issues on the bph/gutenberg fork (Settings → Features — off by default on forks)
+#   2. Create a pinned "Nightly build log" issue there
+#   3. Set its number in NIGHTLY_ISSUE below (placeholder '1' is a merge blocker)
+#
+# First-run sequence: Run workflow with mode=preflight (verifies secrets,
+# writes nothing), then mode=full on a day the previous routine already ran.
+
+name: Distribute Gutenberg Nightly
+
+on:
+  schedule:
+    - cron: '0 5 * * *' # daily 05:00 UTC
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'preflight = verify credentials only (no writes); full = complete nightly run'
+        type: choice
+        options:
+          - full
+          - preflight
+        default: full
+
+# Never run two nightlies at once (races on git push, release assets, SFTP).
+# cancel-in-progress: false queues a second trigger instead of killing a
+# running build mid-upload.
+concurrency:
+  group: nightly-distribution
+  cancel-in-progress: false
+
+# actions: write is needed by the keep-alive step (github.token, not the PAT)
+permissions:
+  contents: read
+  actions: write
+
+env:
+  NIGHTLY_ISSUE: '1' # TODO: replace with the real pinned-issue number on bph/gutenberg
+  # Single token name for everything: the gh CLI falls back to GITHUB_TOKEN
+  # when GH_TOKEN is unset, and block-status.js reads GITHUB_TOKEN directly.
+  # Matches the variable name used in the local .env.
+  GITHUB_TOKEN: ${{ secrets.NIGHTLY_PAT }}
+  # Consumed by dist now / dist update-page (spawned by startend.js)
+  localDir: ../gutenberg/
+  FTPhost: ${{ secrets.FTPHOST }}
+  FTPport: ${{ secrets.FTPPORT }}
+  FTPuser: ${{ secrets.FTPUSER }}
+  FTPpass: ${{ secrets.FTPPASS }}
+  WP_API_URL: ${{ secrets.WP_API_URL }}
+  WP_USER: ${{ secrets.WP_USER }}
+  WP_APP_PASSWORD: ${{ secrets.WP_APP_PASSWORD }}
+
+jobs:
+  nightly:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      # ── 1. Side-by-side layout: ./distribute-nightly and ./gutenberg ──
+      - name: Checkout distribute-nightly
+        uses: actions/checkout@v4
+        with:
+          path: distribute-nightly
+
+      - name: Checkout bph/gutenberg fork
+        uses: actions/checkout@v4
+        with:
+          repository: bph/gutenberg
+          token: ${{ secrets.NIGHTLY_PAT }}
+          path: gutenberg
+          ref: trunk
+          fetch-depth: 0 # full history so the merge behaves like a long-lived clone
+
+      - name: Configure git identity and upstream remote
+        working-directory: gutenberg
+        run: |
+          git config user.name  "gutenberg-nightly-bot"
+          git config user.email "pauli@gutenbergtimes.com"
+          git remote add upstream https://github.com/WordPress/gutenberg.git
+
+      # ── 2. Toolchain ──────────────────────────────────────────────
+      - name: Set up Node (from Gutenberg's .nvmrc)
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: gutenberg/.nvmrc
+          cache: npm
+          cache-dependency-path: gutenberg/package-lock.json
+
+      - name: Install dependencies and the `dist` command
+        working-directory: distribute-nightly
+        run: |
+          npm ci
+          npm install -g . # provides the `dist` bin that startend.js calls
+
+      # ── 3a. Preflight mode: verify credentials, write nothing ──────
+      - name: Preflight — verify credentials
+        if: inputs.mode == 'preflight'
+        working-directory: distribute-nightly
+        run: dist test --no-clear
+
+      # ── 3b. Full run: the nightly routine, unchanged ───────────────
+      - name: Install Gutenberg build dependencies
+        if: inputs.mode != 'preflight'
+        working-directory: gutenberg
+        run: npm ci
+
+      - name: Run startend.js
+        if: inputs.mode != 'preflight'
+        working-directory: distribute-nightly
+        run: node startend.js
+
+      # ── 4. Job summary on the run page ────────────────────────────
+      - name: Write job summary
+        if: always() && inputs.mode != 'preflight'
+        run: |
+          VERSION=$(grep -oP 'Version:\s*\K\S+' gutenberg/gutenberg.php || echo "unknown")
+          ZIPSIZE=$(du -h gutenberg/gutenberg.zip 2>/dev/null | cut -f1 || echo "n/a")
+          TAG=$(gh release list -L 1 -R bph/gutenberg --json tagName --jq '.[0].tagName' || echo "n/a")
+          {
+            echo "## Gutenberg Nightly — ${{ job.status }}"
+            echo ""
+            echo "| | |"
+            echo "|---|---|"
+            echo "| Version | \`$VERSION\` |"
+            echo "| Zip size | $ZIPSIZE |"
+            echo "| Release | [$TAG](https://github.com/bph/gutenberg/releases/tag/$TAG) |"
+            echo "| Page | [need-a-zip-from-master](https://gutenbergtimes.com/need-a-zip-from-master/) |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # ── 5. Public notification chain on pinned issue ───────────────
+      - name: Comment on build-log issue (success)
+        if: success() && inputs.mode != 'preflight'
+        run: |
+          VERSION=$(grep -oP 'Version:\s*\K\S+' gutenberg/gutenberg.php)
+          TAG=$(gh release list -L 1 -R bph/gutenberg --json tagName --jq '.[0].tagName')
+          gh issue comment "$NIGHTLY_ISSUE" -R bph/gutenberg --body \
+            "✅ **Nightly $VERSION** built and distributed. [Download](https://github.com/bph/gutenberg/releases/tag/$TAG) · [Run log](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+
+      - name: Comment on build-log issue (failure)
+        if: failure() && inputs.mode != 'preflight'
+        run: |
+          gh issue comment "$NIGHTLY_ISSUE" -R bph/gutenberg --body \
+            "❌ **Nightly build failed** on $(date -u +%Y-%m-%d). [Run log](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+
+      # ── 6. Defeat the 60-day scheduled-workflow auto-disable ───────
+      # Nightly commits land on bph/gutenberg, so this repo looks inactive
+      # to GitHub. Re-enabling our own schedule counts as activity. Uses the
+      # built-in token (the PAT is deliberately scoped to bph/gutenberg only
+      # and cannot write here). GH_TOKEN takes precedence over GITHUB_TOKEN
+      # for the gh CLI, so this step alone uses the built-in token.
+      - name: Keep scheduled workflow alive
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X PUT repos/${{ github.repository }}/actions/workflows/nightly.yml/enable

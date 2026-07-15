@@ -13,7 +13,6 @@
  * each with their own repo. 
  */
 const shell = require('shelljs');
-const { yellow: y, green: g } = require('chalk');
 const lineReader = require('line-reader');
 //const upstream = 'wordpress/gutenberg';
 const nightlyFork = 'bph/gutenberg';
@@ -59,15 +58,15 @@ module.exports = (async () => {
 
                 if (fileVersion > nightlyVersion)
                      {
-                        console.log(`${g(` New version` )}`);
-                        console.log(`${g(`Create a new release`)}`);
+                        console.log(' New version');
+                        console.log('Create a new release');
                         const newrelease = shell.exec(`gh release create '${fileVersion}-nightly' '${releaseAsset}' --repo ${nightlyFork} --title 'Gutenberg Nightly' -F '${releaseNotes}'`);
-                        console.log(`${g(`New release created.`)}`)
+                        console.log('New release created.')
                         console.log(newrelease.stdout);
                     } else {
-                        console.log(`${y(`Updating the current asset for ${nightlytag}`)}`);
+                        console.log(`Updating the current asset for ${nightlytag}`);
                         const updateAsset = shell.exec(`gh release upload ${nightlytag} ${releaseAsset} --repo ${nightlyFork} --clobber`);
-                        console.log(`${g(`${releaseAsset} uploaded`)}`);
+                        console.log(`${releaseAsset} uploaded`);
                         console.log(updateAsset.stdout);
                     }
                 return false;

@@ -1,0 +1,50 @@
+# Reset fork — recovery tool for the Gutenberg Nightly pipeline
+#
+# When the nightly run fails with a multi-file merge conflict (anything
+# beyond gutenberg.php), no automated resolution is attempted by design.
+# This workflow recovers by force-pushing upstream/trunk over the fork's
+# trunk. The fork's branch history (daily version-stamp and merge commits)
+# is disposable; releases, tags, and zip assets live outside the branch
+# and are NOT touched by a branch reset. The next nightly run re-stamps
+# and continues normally.
+#
+# Manual trigger ONLY (workflow_dispatch). Never add a schedule to this.
+
+name: Reset fork trunk to upstream
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type RESET to confirm force-pushing WordPress/gutenberg trunk over bph/gutenberg trunk'
+        required: true
+
+jobs:
+  reset:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Require confirmation phrase
+        if: inputs.confirm != 'RESET'
+        run: |
+          echo "Confirmation phrase not entered — aborting without changes."
+          exit 1
+
+      - name: Checkout bph/gutenberg fork
+        uses: actions/checkout@v4
+        with:
+          repository: bph/gutenberg
+          token: ${{ secrets.NIGHTLY_PAT }}
+          ref: trunk
+          fetch-depth: 0
+
+      - name: Reset trunk to upstream and force-push
+        run: |
+          git remote add upstream https://github.com/WordPress/gutenberg.git
+          git fetch upstream trunk --no-tags
+          echo "Fork trunk was at:     $(git rev-parse HEAD)"
+          echo "Upstream trunk is at:  $(git rev-parse upstream/trunk)"
+          git reset --hard upstream/trunk
+          git push --force origin trunk
+          echo "Fork trunk reset to upstream/trunk. Releases and tags are unaffected."
+          echo "Trigger 'Distribute Gutenberg Nightly' (mode=full) to resume."

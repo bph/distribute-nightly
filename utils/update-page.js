@@ -4,10 +4,10 @@
  * via the WordPress REST API.
  */
 const shell = require('shelljs');
-const { yellow: y, green: g } = require('chalk');
 const lineReader = require('line-reader');
 const open = require('open');
 const { wpGet, wpPost } = require('./wordpress');
+const { nextMajorMinor } = require('./version');
 const { buildDynamicZone } = require('../templates/dynamic-zone');
 const getBlockStatus = require('./block-status');
 
@@ -39,7 +39,7 @@ async function fetchWhatsNewUrl(stableVersion) {
         const match = xml.match(re);
         if (match) return match[2].trim();
     } catch (err) {
-        console.log(`${y('Warning: Could not fetch What\'s New URL:')} ${err.message}`);
+        console.log(`Warning: Could not fetch What's New URL: ${err.message}`);
     }
     return `https://make.wordpress.org/core/tag/gutenberg-new/`;
 }
@@ -51,7 +51,7 @@ async function fetchWeekendEdition() {
             return { weekendEditionTitle: posts[0].title.rendered, weekendEditionUrl: posts[0].link };
         }
     } catch (err) {
-        console.log(`${y('Warning: Could not fetch Weekend Edition:')} ${err.message}`);
+        console.log(`Warning: Could not fetch Weekend Edition: ${err.message}`);
     }
     return { weekendEditionTitle: 'Weekend Edition', weekendEditionUrl: 'https://gutenbergtimes.com/category/weekend-edition/' };
 }
@@ -63,19 +63,17 @@ async function fetchPodcast() {
             return { podcastTitle: episodes[0].title.rendered, podcastUrl: episodes[0].link };
         }
     } catch (err) {
-        console.log(`${y('Warning: Could not fetch Podcast:')} ${err.message}`);
+        console.log(`Warning: Could not fetch Podcast: ${err.message}`);
     }
     return { podcastTitle: 'Gutenberg Changelog', podcastUrl: 'https://gutenbergtimes.com/podcast/' };
 }
 
 async function fetchRcRelease(stableVersion) {
     try {
-        // Next version after current stable (e.g., 22.7 → 22.8)
+        // Next version after current stable (e.g., 22.7 → 22.8, 23.9 → 24.0)
         const parts = stableVersion.split('.');
-        let major = parseInt(parts[0]);
-        let minor = parseInt(parts[1]) + 1;
-        if (minor > 9) { major += 1; minor = 0; }
-        const nextVersion = `${major}.${minor}`;
+        const next = nextMajorMinor(parseInt(parts[0]), parseInt(parts[1]));
+        const nextVersion = `${next.major}.${next.minor}`;
 
         const result = shell.exec(
             `gh release list -R WordPress/gutenberg -L 10 --json tagName,name,isPrerelease --jq '[.[] | select(.isPrerelease)]'`,
@@ -99,7 +97,7 @@ async function fetchRcRelease(stableVersion) {
             rcUrl: `https://github.com/WordPress/gutenberg/releases/tag/${rc.tagName}`,
         };
     } catch (err) {
-        console.log(`${y('Warning: Could not check for RC releases:')} ${err.message}`);
+        console.log(`Warning: Could not check for RC releases: ${err.message}`);
         return null;
     }
 }
@@ -123,11 +121,11 @@ module.exports = (async () => {
         stableVersion = wpOrgData.version;
         console.log(`Stable Gutenberg version (from WP.org): ${stableVersion}`);
     } catch (err) {
-        console.log(`${y('Warning: Could not fetch stable version from WP.org:')} ${err.message}`);
+        console.log(`Warning: Could not fetch stable version from WP.org: ${err.message}`);
         // Fallback: use nightly major.minor minus 1
         const parts = fullVersion.split('.');
         stableVersion = `${parts[0]}.${parseInt(parts[1]) - 1}`;
-        console.log(`${y('Using fallback stable version:')} ${stableVersion}`);
+        console.log(`Using fallback stable version: ${stableVersion}`);
     }
 
     // Get the actual nightly release tag from GitHub (e.g. "23.0.-nightly")
@@ -209,8 +207,11 @@ module.exports = (async () => {
 
     await wpPost(`/wp/v2/pages/${PAGE_ID}`, { content: newContent });
 
-    // Step 4 — Log success and open page
-    console.log(`${g('Page updated successfully!')}`);
-    console.log(`${g('https://gutenbergtimes.com/need-a-zip-from-master/')}`);
-    await open('https://gutenbergtimes.com/need-a-zip-from-master/');
+    // Step 4 — Log success; open the page for eyeballing (local runs only —
+    // CI is set automatically on GitHub Actions runners, which have no browser)
+    console.log('Page updated successfully!');
+    console.log('https://gutenbergtimes.com/need-a-zip-from-master/');
+    if (!process.env.CI) {
+        await open('https://gutenbergtimes.com/need-a-zip-from-master/');
+    }
 });

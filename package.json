@@ -5,9 +5,7 @@
     "license": "MIT",
     "repository": "https://github.com/bph/distribute-nightly",
     "bin": {
-        "distribute-nightly ": "index.js",
-        "dist": "index.js",
-        "test": "index.js"
+        "dist": "index.js"
     },
     "author": {
         "name": "Birgit Pauli-Haack",

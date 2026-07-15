@@ -1,5 +1,4 @@
 const shell = require('shelljs');
-const { yellow: y, green: g } = require('chalk');
 
 module.exports = (async () => {
     const changeDir = shell.exec(`cd ../gutenberg`);

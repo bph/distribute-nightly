@@ -16,7 +16,6 @@
  */
 const fs = require('fs');
 const path = require('path');
-const { yellow: y, green: g } = require('chalk');
 
 const GUTENBERG_ROOT = path.resolve(__dirname, '../../gutenberg');
 const GUTENBERG_BLOCKS_DIR = path.join(GUTENBERG_ROOT, 'packages/block-library/src');
@@ -38,7 +37,7 @@ function readGutenbergBlocks() {
             const json = JSON.parse(fs.readFileSync(blockJsonPath, 'utf8'));
             blocks.push({ dir: entry.name, json });
         } catch (err) {
-            console.log(`${y('Warning: Could not parse')} ${entry.name}/block.json: ${err.message}`);
+            console.log(`Warning: Could not parse ${entry.name}/block.json: ${err.message}`);
         }
     }
     return blocks;
@@ -171,7 +170,7 @@ async function getBlockStatus() {
         if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
         fs.writeFileSync(OUTPUT_FILE, JSON.stringify(blocks, null, 2));
 
-        console.log(`${g('Block status:')} ${blocks.length} blocks scanned`);
+        console.log(`Block status: ${blocks.length} blocks scanned`);
         for (const tier of ['experiments', 'plugin-only', 'pending-core', 'core']) {
             console.log(`  ${tier}: ${summary[tier] || 0}`);
         }
@@ -179,7 +178,7 @@ async function getBlockStatus() {
 
         return { blocks, summary };
     } catch (err) {
-        console.log(`${y('Warning: block-status step failed:')} ${err.message}`);
+        console.log(`Warning: block-status step failed: ${err.message}`);
         return null;
     }
 }

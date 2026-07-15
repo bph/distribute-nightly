@@ -2,6 +2,7 @@
 const { execSync } = require('child_process');
 const path = require('path');
 const fs = require('fs');
+const { nextMajorMinor } = require('./utils/version');
 
 // Get the current date in MM/DD format
 const currentDate = new Date();
@@ -26,19 +27,38 @@ function runCommand(command, cwd = process.cwd()) {
 }
 
 // Get the nightly version from the latest release tag on bph/gutenberg
+// If an upstream RC exists for the current major.minor, bump the minor version
 function getNightlyVersion() {
     const result = execSync('gh release list -L 1 -R bph/gutenberg', { encoding: 'utf8' }).trim();
     if (!result) {
         throw new Error('Could not get latest release from bph/gutenberg');
     }
-    // Tag is in the third tab-separated column, e.g. "23.0.-nightly"
+    // Tag is in the third tab-separated column, e.g. "23.0-nightly"
     const tag = result.split('\t')[2];
     const match = tag.match(/(\d+)\.(\d+)/);
     if (!match) {
         throw new Error(`Could not parse version from release tag: ${tag}`);
     }
-    const major = parseInt(match[1]);
-    const minor = parseInt(match[2]);
+    let major = parseInt(match[1]);
+    let minor = parseInt(match[2]);
+
+    // Check if an upstream RC exists for this major.minor — if so, bump minor
+    try {
+        const rcCheck = execSync(
+            `gh release list -R WordPress/gutenberg --limit 10 --json tagName --jq '.[].tagName'`,
+            { encoding: 'utf8' }
+        ).trim();
+        const rcPattern = new RegExp(`^v${major}\\.${minor}\\.\\d+-rc`);
+        if (rcCheck.split('\n').some(t => rcPattern.test(t))) {
+            const next = nextMajorMinor(major, minor);
+            console.log(`Upstream RC found for ${major}.${minor} — bumping nightly to ${next.major}.${next.minor}`);
+            major = next.major;
+            minor = next.minor;
+        }
+    } catch (err) {
+        console.log('Warning: could not check upstream RCs, using current version');
+    }
+
     return `${major}.${minor}.${dateStamp}`;
 }
 
@@ -65,8 +85,14 @@ function main() {
     // Step 2: Update gutenberg.php with the nightly version and commit
     updateVersionInFile(gutenbergDir, nightlyVersion);
     execSync('git add gutenberg.php', { cwd: gutenbergDir });
-    execSync(`git commit -m 'version bump to ${nightlyVersion}' --no-verify`, { stdio: 'inherit', cwd: gutenbergDir });
-    console.log(`Version updated to ${nightlyVersion}`);
+    // Only commit if there's something staged — avoids failing when version is already current
+    const staged = execSync('git diff --cached --name-only', { cwd: gutenbergDir, encoding: 'utf8' }).trim();
+    if (staged) {
+        execSync(`git commit -m 'version bump to ${nightlyVersion}' --no-verify`, { stdio: 'inherit', cwd: gutenbergDir });
+        console.log(`Version updated to ${nightlyVersion}`);
+    } else {
+        console.log(`Version already at ${nightlyVersion} — skipping commit`);
+    }
 
     // Step 3: Merge upstream/trunk
     // If the merge conflicts only in gutenberg.php (version bump), resolve by keeping ours
