@@ -67,12 +67,12 @@ jobs:
     steps:
       # ── 1. Side-by-side layout: ./distribute-nightly and ./gutenberg ──
       - name: Checkout distribute-nightly
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           path: distribute-nightly
 
       - name: Checkout bph/gutenberg fork
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: bph/gutenberg
           token: ${{ secrets.NIGHTLY_PAT }}
@@ -89,7 +89,7 @@ jobs:
 
       # ── 2. Toolchain ──────────────────────────────────────────────
       - name: Set up Node (from Gutenberg's .nvmrc)
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version-file: gutenberg/.nvmrc
           cache: npm
