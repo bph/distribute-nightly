@@ -21,7 +21,7 @@ name: Distribute Gutenberg Nightly
 
 on:
   schedule:
-    - cron: '0 5 * * *' # daily 05:00 UTC
+    - cron: '0 9 * * *' # daily 09:00 UTC
   workflow_dispatch:
     inputs:
       mode:

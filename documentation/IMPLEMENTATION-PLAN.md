@@ -51,7 +51,7 @@ Based on the plan's Artifact A, with these changes:
 ## Staged rollout (Decision 9 — replaces old test plan)
 - **Stage 0 — preflight:** Run workflow with `mode: preflight`. Writes nothing; proves secrets, checkouts, auth.
 - **Stage 1 — shadow run:** First `mode: full` run on a day the Mac routine already ran. Expected: same version computed, no-op stamp commit, asset clobbered with equivalent zip, page rewritten with same values. Any diff = CI bug caught with hours-old restorable ground truth.
-- **Stage 2 — go live:** Enable schedule (05:00 UTC), watch a week of green runs, then decommission the Mac routine. Verify the next real version jump (23.7 → 23.8, when v23.7.0-rc ships ~late Aug) via the jump log line + new `23.8-nightly` release.
+- **Stage 2 — go live:** Enable schedule (09:00 UTC), watch a week of green runs, then decommission the Mac routine. Verify the next real version jump (23.7 → 23.8, when v23.7.0-rc ships ~late Aug) via the jump log line + new `23.8-nightly` release.
 
 ## Out of scope / accepted risks
 - Multi-file merge conflicts still fail the run by design → ❌ issue comment → human runs reset-fork workflow.
