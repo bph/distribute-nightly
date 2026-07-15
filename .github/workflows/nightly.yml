@@ -10,10 +10,9 @@
 #   FTPHOST, FTPPORT, FTPUSER, FTPPASS
 #   WP_API_URL, WP_USER, WP_APP_PASSWORD
 #
-# One-time prerequisites (in this order):
-#   1. Enable Issues on the bph/gutenberg fork (Settings → Features — off by default on forks)
-#   2. Create a pinned "Nightly build log" issue there
-#   3. Set its number in NIGHTLY_ISSUE below (placeholder '1' is a merge blocker)
+# Build log: notifications post to the pinned issue set in NIGHTLY_ISSUE
+# (bph/gutenberg#200 "Tracking Gutenberg Nightly builds"). If it ever moves,
+# update the number below — and note Issues must stay enabled on the fork.
 #
 # First-run sequence: Run workflow with mode=preflight (verifies secrets,
 # writes nothing), then mode=full on a day the previous routine already ran.
@@ -46,7 +45,7 @@ permissions:
   actions: write
 
 env:
-  NIGHTLY_ISSUE: '1' # TODO: replace with the real pinned-issue number on bph/gutenberg
+  NIGHTLY_ISSUE: '200' # pinned "Nightly build log" issue on bph/gutenberg
   # Single token name for everything: the gh CLI falls back to GITHUB_TOKEN
   # when GH_TOKEN is unset, and block-status.js reads GITHUB_TOKEN directly.
   # Matches the variable name used in the local .env.
