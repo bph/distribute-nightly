@@ -148,9 +148,10 @@ jobs:
               b.updated = new Date().toISOString().slice(0, 10);
               fs.writeFileSync(f, JSON.stringify(b, null, 4) + '\n');
             "
+            echo "$(date -u +%F),$PREV_DOWNLOADS,$(node -p "require('./badge/downloads.json').total")" >> badge/history.csv
             git config user.name  "gutenberg-nightly-bot"
             git config user.email "pauli@gutenbergtimes.com"
-            git add badge/downloads.json
+            git add badge/downloads.json badge/history.csv
             git commit -m "ledger: +$PREV_DOWNLOADS downloads"
             git push
           else
