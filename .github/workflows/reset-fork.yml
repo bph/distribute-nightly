@@ -5,8 +5,10 @@
 # This workflow recovers by force-pushing upstream/trunk over the fork's
 # trunk. The fork's branch history (daily version-stamp and merge commits)
 # is disposable; releases, tags, and zip assets live outside the branch
-# and are NOT touched by a branch reset. The next nightly run re-stamps
-# and continues normally.
+# and are NOT touched by a branch reset. The customized gutenberg.php
+# (plugin rename + Git Updater headers) is preserved across the reset —
+# it is the one fork modification that must never be lost. The next
+# nightly run re-stamps and continues normally.
 #
 # Manual trigger ONLY (workflow_dispatch). Never add a schedule to this.
 
@@ -38,13 +40,25 @@ jobs:
           ref: trunk
           fetch-depth: 0
 
-      - name: Reset trunk to upstream and force-push
+      # gutenberg.php on the fork is customized (plugin renamed to
+      # "Gutenberg - Nightly", Git Updater headers, gu_override_dot_org
+      # filter). Losing it would silently disconnect every test site that
+      # updates via Git Updater. Preserve it across the reset — same
+      # keep-ours semantics the daily merge uses.
+      - name: Reset trunk to upstream, restore gutenberg.php, force-push
         run: |
+          git config user.name  "gutenberg-nightly-bot"
+          git config user.email "pauli@gutenbergtimes.com"
           git remote add upstream https://github.com/WordPress/gutenberg.git
           git fetch upstream trunk --no-tags
           echo "Fork trunk was at:     $(git rev-parse HEAD)"
           echo "Upstream trunk is at:  $(git rev-parse upstream/trunk)"
+          cp gutenberg.php /tmp/gutenberg-fork.php
           git reset --hard upstream/trunk
+          cp /tmp/gutenberg-fork.php gutenberg.php
+          git add gutenberg.php
+          git commit -m "Restore Gutenberg Nightly plugin header and Git Updater connection after fork reset"
           git push --force origin trunk
-          echo "Fork trunk reset to upstream/trunk. Releases and tags are unaffected."
+          echo "Fork trunk reset to upstream/trunk with gutenberg.php customizations preserved."
+          echo "Releases and tags are unaffected."
           echo "Trigger 'Distribute Gutenberg Nightly' (mode=full) to resume."
