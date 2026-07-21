@@ -68,9 +68,11 @@ Verify with `mode=preflight` after rotating any of these.
 
 ## Troubleshooting
 
-### 1. Scheduled run fired hours late
+### 1. Scheduled run hasn't fired yet
 
-**Symptom:** run's "created at" is well after 07:00 UTC.
+**First check:** [githubstatus.com](https://www.githubstatus.com/) — if the **Actions** component is red or yellow, it's platform-side. Wait it out; the concurrency guard will handle a late catch-up. Otherwise treat it as a cron delay (see below).
+
+**Symptom:** run's "created at" is well after 07:00 UTC, or no run for today at all.
 
 **Cause:** GitHub Actions cron is best-effort — during shared-runner high-load windows, scheduled dispatches queue up or drop. Nothing in this repo can force it.
 
