@@ -94,7 +94,14 @@ Verify with `mode=preflight` after rotating any of these.
 
 **Cause:** upstream changed files that our fork also touched (rare — usually only `gutenberg.php` diverges, and Git Updater config in the version bump).
 
-**Response:** run [`.github/workflows/reset-fork.yml`](../.github/workflows/reset-fork.yml) — resets the fork's `trunk` to upstream. Releases and tags survive. Then re-run the nightly.
+**Response:** run [`.github/workflows/reset-fork.yml`](../.github/workflows/reset-fork.yml) (type `RESET` to confirm) — force-pushes `upstream/trunk` over the fork's `trunk`. What survives:
+
+- **Releases, tags, and zip assets** — they live outside the branch, untouched by a branch reset.
+- **Customized `gutenberg.php`** — the workflow copies the fork's file aside before the reset and re-commits it (`reset-fork.yml:56-60`). This preserves the "Gutenberg - Nightly" plugin header, Git Updater headers, and the `gu_override_dot_org` filter, so every test site auto-updating via Git Updater stays connected.
+
+What is lost: the fork's branch history (daily version-stamp and merge commits). That's fine — the next nightly re-stamps and continues normally.
+
+Then re-run the nightly (`mode=full`). **Sanity check after the reset:** open `gutenberg.php` on `bph/gutenberg@trunk` and confirm the `Plugin Name`, Git Updater `GitHub Plugin URI`, and `gu_override_dot_org` filter are all present. If any are missing, restore them manually before the next nightly runs.
 
 ### 4. Preflight failure (creds)
 
