@@ -13,20 +13,14 @@ Day-to-day operations guide for the Distribute Gutenberg Nightly pipeline. For i
 ## Pipeline
 
 ```mermaid
-graph LR
-    A[Checkout<br/>side-by-side] --> B[Capture prev<br/>download count]
-    B --> C[npm ci<br/>gutenberg]
-    C --> D[startend.js]
-    D --> D1[fetch upstream]
-    D1 --> D2[bump version<br/>gutenberg.php]
-    D2 --> D3[merge upstream/trunk]
-    D3 --> D4[build plugin zip]
-    D4 --> D5[dist now<br/>release + SFTP]
-    D5 --> D6[dist update-page<br/>WP REST]
-    D6 --> E[Update ledger<br/>badge/downloads.json]
+graph TD
+    A[Checkout side-by-side] --> B[Capture prev download count]
+    B --> C[npm ci gutenberg]
+    C --> D[startend.js: fetch upstream → bump version → merge trunk → build zip → dist now release+SFTP → dist update-page WP REST]
+    D --> E[Update ledger badge/downloads.json]
     E --> F[Job summary]
     F --> G[Comment on issue #200]
-    G --> H[Re-enable workflow<br/>keep-alive]
+    G --> H[Re-enable workflow keep-alive]
 ```
 
 ### Step-by-step (mapped to `nightly.yml`)
