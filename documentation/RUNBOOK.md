@@ -110,7 +110,7 @@ Then re-run the nightly (`mode=full`). **Sanity check after the reset:** open `g
 **Symptom:** `dist test` fails.
 
 **Response:** the failing check names the secret. Rotate → update in Settings → re-run `mode=preflight`.
-- `NIGHTLY_PAT` expired → regenerate fine-grained PAT for `bph/gutenberg` (Contents + Issues R/W)
+- `NIGHTLY_PAT` expired → regenerate fine-grained PAT for `bph/gutenberg` (Contents + Issues + **Workflows** R/W)
 - WP application password revoked → regenerate at wp-admin → Users → Profile
 - SFTP auth changed → refresh the four `FTP*` secrets
 
@@ -139,7 +139,34 @@ Then re-run the nightly (`mode=full`). **Sanity check after the reset:** open `g
 
 **Response:** Actions → workflow → "…" → Enable workflow. Trigger a manual `full` run to reset the activity clock.
 
-### 8. Downloads badge shows stale total
+### 8. Downloads cratered (100+/day → single digits) but runs still ✅
+
+**Symptom:** the ✅ comment on [#200](https://github.com/bph/gutenberg/issues/200) reports 1–2 downloads for several days in a row after weeks of ~100+. The workflow is green, the release asset updates daily, the download page link works.
+
+**Cause:** `bph/gutenberg@trunk` has stopped moving. Git Updater on end-user sites reads the `Version:` header from `gutenberg.php` on the fork's `trunk` to decide whether to offer an update. If `trunk` is frozen at an older version, once every site's Git Updater cache expires they all conclude they're up to date → downloads collapse.
+
+**How to confirm quickly:**
+```bash
+gh api repos/bph/gutenberg/commits/trunk --jq '{sha: .sha[0:7], date: .commit.author.date}'
+gh api repos/bph/gutenberg/contents/gutenberg.php --jq '.content' | base64 -d | grep '^ \* Version:'
+```
+If the commit date is more than ~2 days old, or the Version doesn't match today's dateStamp (`23.7.YYYYMMDD`), the push is failing.
+
+**Most common cause:** `NIGHTLY_PAT` is missing the **Workflows** permission. Upstream Gutenberg includes files under `.github/workflows/` — when the daily merge pulls in changes to any of them, `git push origin trunk` is rejected:
+```
+! [remote rejected] trunk -> trunk
+  (refusing to allow a Personal Access Token to create or update workflow
+   `.github/workflows/build-plugin-zip.yml` without `workflow` scope)
+```
+Historically this failure was swallowed by `utils/git.js` (fixed 2026-07-28 — now exits the run non-zero). Older frozen-trunk periods will show green runs with this rejection buried in the "Run startend.js" step's log.
+
+**Fix:**
+1. Rotate `NIGHTLY_PAT` — add **Workflows: Read and write** to Contents + Issues. See [Preflight failure](#4-preflight-failure-creds) for the update-secret path.
+2. Trigger `mode=full` — the accumulated version bumps + upstream merges push in one go.
+3. Verify `gh api repos/bph/gutenberg/commits/trunk` now shows today's `prep build <MM/DD>` commit.
+4. End-user sites will start seeing updates as their Git Updater caches refresh (default ~12h). Users can force via *Git Updater → Settings → Refresh Cache*. Expect the next day's ✅ comment to report a large catch-up download count.
+
+### 9. Downloads badge shows stale total
 
 **Symptom:** shields.io badge doesn't reflect today's cumulative count.
 

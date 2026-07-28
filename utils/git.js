@@ -21,11 +21,19 @@ const releaseNotes = '../distribute-nightly/nightlyrelease.md';
     
 module.exports = (async () => {
 
-    // First step is 
-    // push changes to the github repo
+    // First step is
+    // push changes to the github repo.
+    // A silent push failure (e.g. PAT missing the `workflow` scope after an
+    // upstream workflow file change) leaves the fork's trunk frozen while the
+    // release asset keeps getting clobbered — end-user Git Updater stops
+    // offering updates once caches converge. Fail loudly instead.
     console.log(`Pushing all changes to github repo`);
-    const pushtogithub = shell.exec(`cd ../gutenberg && git push origin trunk && cd ../distribute-nightly`);
-    console.log(pushtogithub.stderr);
+    const pushtogithub = shell.exec(`git push origin trunk`, { cwd: '../gutenberg' });
+    if (pushtogithub.code !== 0) {
+        console.error(`git push origin trunk failed (exit ${pushtogithub.code}):`);
+        console.error(pushtogithub.stderr);
+        process.exit(1);
+    }
     console.log(`GitHub repo updated`);
 
     //I match up the tags for comparison. First nightly, then WordPress (upstream)
