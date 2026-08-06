@@ -11,7 +11,7 @@
 #   WP_API_URL, WP_USER, WP_APP_PASSWORD
 #
 # Build log: notifications post to the pinned issue set in NIGHTLY_ISSUE
-# (bph/gutenberg#200 "Tracking Gutenberg Nightly builds"). If it ever moves,
+# (bph/gutenberg#204 "Tracking Gutenberg Nightly builds"). If it ever moves,
 # update the number below — and note Issues must stay enabled on the fork.
 #
 # First-run sequence: Run workflow with mode=preflight (verifies secrets,
@@ -46,7 +46,7 @@ permissions:
   actions: write
 
 env:
-  NIGHTLY_ISSUE: '200' # pinned "Nightly build log" issue on bph/gutenberg
+  NIGHTLY_ISSUE: '204' # pinned "Nightly build log" issue on bph/gutenberg
   # Single token name for everything: the gh CLI falls back to GITHUB_TOKEN
   # when GH_TOKEN is unset, and block-status.js reads GITHUB_TOKEN directly.
   # Matches the variable name used in the local .env.

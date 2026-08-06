@@ -19,7 +19,7 @@ graph TD
     C --> D[startend.js: fetch upstream → bump version → merge trunk → build zip → dist now release+SFTP → dist update-page WP REST]
     D --> E[Update ledger badge/downloads.json]
     E --> F[Job summary]
-    F --> G[Comment on issue #200]
+    F --> G[Comment on issue #204]
     G --> H[Re-enable workflow keep-alive]
 ```
 
@@ -37,7 +37,7 @@ graph TD
 | 8 | `node startend.js` | `nightly.yml:128-131` | Version bump → merge upstream → build zip → `dist now` (release + SFTP) → `dist update-page` (WP REST). See [`startend.js`](../startend.js) |
 | 9 | Update download ledger | `nightly.yml:139-161` | Adds `PREV_DOWNLOADS` to `badge/downloads.json`, appends `badge/history.csv`, commits and pushes |
 | 10 | Job summary | `nightly.yml:164-179` | Version, zip size, release tag, download-page link |
-| 11 | Comment on build-log issue | `nightly.yml:182-194` | ✅/❌ on [bph/gutenberg#200](https://github.com/bph/gutenberg/issues/200) |
+| 11 | Comment on build-log issue | `nightly.yml:182-194` | ✅/❌ on [bph/gutenberg#204](https://github.com/bph/gutenberg/issues/204) |
 | 12 | Keep-alive | `nightly.yml:202-206` | Re-enables the schedule (defeats 60-day auto-disable) |
 
 ## Where things live
@@ -51,7 +51,7 @@ graph TD
 | Release asset | `gutenberg.zip` on the latest release of `bph/gutenberg` |
 | SFTP target | `gutenbergtimes.com` (creds in secrets `FTPHOST`/`FTPPORT`/`FTPUSER`/`FTPPASS`) |
 | Download page | https://gutenbergtimes.com/need-a-zip-from-master — updated via WP REST (`WP_API_URL`) |
-| Build log | [bph/gutenberg#200](https://github.com/bph/gutenberg/issues/200) (env `NIGHTLY_ISSUE=200`) |
+| Build log | [bph/gutenberg#204](https://github.com/bph/gutenberg/issues/204) (env `NIGHTLY_ISSUE=204`) |
 | Downloads badge | [`badge/downloads.json`](../badge/downloads.json) → shields.io endpoint |
 | Download history | [`badge/history.csv`](../badge/history.csv) |
 | Manual reset | [`.github/workflows/reset-fork.yml`](../.github/workflows/reset-fork.yml) |
@@ -141,7 +141,7 @@ Then re-run the nightly (`mode=full`). **Sanity check after the reset:** open `g
 
 ### 8. Downloads cratered (100+/day → single digits) but runs still ✅
 
-**Symptom:** the ✅ comment on [#200](https://github.com/bph/gutenberg/issues/200) reports 1–2 downloads for several days in a row after weeks of ~100+. The workflow is green, the release asset updates daily, the download page link works.
+**Symptom:** the ✅ comment on [#204](https://github.com/bph/gutenberg/issues/204) reports 1–2 downloads for several days in a row after weeks of ~100+. The workflow is green, the release asset updates daily, the download page link works.
 
 **Cause:** `bph/gutenberg@trunk` has stopped moving. Git Updater on end-user sites reads the `Version:` header from `gutenberg.php` on the fork's `trunk` to decide whether to offer an update. If `trunk` is frozen at an older version, once every site's Git Updater cache expires they all conclude they're up to date → downloads collapse.
 
