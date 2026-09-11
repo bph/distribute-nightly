@@ -29,5 +29,8 @@
     },
     "devDependencies": {
         "prettier": "^2.2.1"
+    },
+    "overrides": {
+        "ssh2": "^1.17.0"
     }
 }

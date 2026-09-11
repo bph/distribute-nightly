@@ -18,20 +18,20 @@ const config = {
     password: process.env.FTPpass
 };
 
- //previous version
 module.exports = (async () => {
-    
+
     let sftp = new Client();
-    
-    await sftp.connect(config)
-        .then(() => {
-         return sftp.put(`${localdir}${releaseAsset}`, `${remotedir}${releaseAsset}`);
-    }).then(data => {
-      console.log(data, 'data: ');
-    }).then(() => {
-       sftp.end();
-      })
-    .catch(err => {
-      console.log(err, 'catch error');
-    });
+
+    try {
+        await sftp.connect(config);
+        const data = await sftp.put(`${localdir}${releaseAsset}`, `${remotedir}${releaseAsset}`);
+        console.log(data, 'data: ');
+    } catch (err) {
+        console.error(err, 'catch error');
+        await sftp.end().catch(() => {});
+        process.exitCode = 1;
+        return;
+    }
+
+    await sftp.end();
 });
