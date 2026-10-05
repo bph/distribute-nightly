@@ -98,7 +98,10 @@ jobs:
 
       - name: Upgrade npm to the version Gutenberg requires
         run: |
-          required=$(node -p "require('./gutenberg/package.json').devEngines.packageManager.version.replace(/^[^0-9]*/, '')")
+          # The fork checkout is stale until startend.js merges upstream, so read upstream trunk.
+          required=$(curl -fsSL https://raw.githubusercontent.com/WordPress/gutenberg/trunk/package.json \
+            | node -p "JSON.parse(require('fs').readFileSync(0,'utf8')).devEngines.packageManager.version.replace(/^[^0-9]*/, '')")
+          echo "Upstream requires npm >= $required"
           npm install -g "npm@${required}"
           npm --version
 
