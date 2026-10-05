@@ -96,6 +96,12 @@ jobs:
           cache: npm
           cache-dependency-path: gutenberg/package-lock.json
 
+      - name: Upgrade npm to the version Gutenberg requires
+        run: |
+          required=$(node -p "require('./gutenberg/package.json').devEngines.packageManager.version.replace(/^[^0-9]*/, '')")
+          npm install -g "npm@${required}"
+          npm --version
+
       - name: Install dependencies and the `dist` command
         working-directory: distribute-nightly
         run: |
